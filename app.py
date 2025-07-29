@@ -470,8 +470,8 @@ st.markdown("""
     /* Page header styling */
     .page-header {
         text-align: center;
-        padding: 2rem 0;
-        margin-bottom: 2rem;
+        padding: 1rem 0;
+        margin-bottom: 0.5rem;
     }
     
     .page-title {
@@ -481,7 +481,7 @@ st.markdown("""
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.2rem;
         animation: fadeInUp 0.8s ease-out;
     }
     
@@ -489,6 +489,7 @@ st.markdown("""
         font-size: 1.1rem;
         color: rgba(255, 255, 255, 0.9);
         font-weight: 400;
+        margin-bottom: 0.5rem;
         animation: fadeInUp 1s ease-out;
     }
 </style>
