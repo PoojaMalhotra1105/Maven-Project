@@ -588,31 +588,23 @@ def discover_summer_books():
         st.warning("🔍 No books match your current filters. Try adjusting your search criteria.")
         return
     
-    # Result count message
-    st.markdown(f"### 📖 {total_results} Books Found")
+    # Show a reasonable number of results without overwhelming pagination
+    max_display = 100  # Show up to 100 books at once
     
-    # Optional: Add pagination for very large datasets
-    books_per_page = st.sidebar.number_input("📖 Books per page", min_value=10, max_value=200, value=50)
-    
-    if total_results > books_per_page:
-        # Calculate total pages
-        total_pages = (total_results - 1) // books_per_page + 1
-        
-        # Page selector
-        page_number = st.selectbox(f"📄 Page (1 to {total_pages})", 
-                                   options=list(range(1, total_pages + 1)), 
-                                   index=0)
-        
-        # Calculate start and end indices
-        start_idx = (page_number - 1) * books_per_page
-        end_idx = min(start_idx + books_per_page, total_results)
-        
-        # Show current page info
-        st.info(f"Showing books {start_idx + 1} to {end_idx} of {total_results}")
-        
-        # Get books for current page
-        page_books = recommended_df.iloc[start_idx:end_idx]
+    if total_results > max_display:
+        st.markdown(f"### 📖 Showing Top {max_display} Summer Books")
+        if total_results > 500:
+            st.info("💡 Use the filters above to narrow your search for more specific recommendations.")
+        else:
+            st.info(f"💡 Showing top {max_display} of {total_results} books. Use filters to find specific titles.")
+        page_books = recommended_df.head(max_display)
     else:
+        if total_results == 1:
+            st.markdown(f"### 📖 Found Your Book!")
+        elif total_results <= 10:
+            st.markdown(f"### 📖 {total_results} Perfect Matches")
+        else:
+            st.markdown(f"### 📖 {total_results} Great Summer Reads")
         page_books = recommended_df
     
     # Display recommendations
