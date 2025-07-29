@@ -492,6 +492,22 @@ st.markdown("""
         margin-bottom: 0.5rem;
         animation: fadeInUp 1s ease-out;
     }
+    
+    /* Remove extra spacing around captions */
+    .stApp [data-testid="caption"] {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+    }
+    
+    /* Reduce spacing in main content */
+    .stApp .main .block-container {
+        padding-top: 1rem !important;
+    }
+    
+    /* Reduce spacing between elements */
+    .stApp .element-container {
+        margin-bottom: 0.5rem !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -937,7 +953,7 @@ def discover_summer_books():
         st.warning("🔍 No books match your current filters. Try adjusting your search criteria.")
         return
     
-    st.caption(f"📚 Showing {total_results} amazing books")
+    st.markdown(f'<p style="color: rgba(255,255,255,0.8); font-size: 0.8rem; margin: 0; padding: 0;">📚 Showing {total_results} amazing books</p>', unsafe_allow_html=True)
     # Display recommendations
     for _, book in recommended_df.head(50).iterrows():
         display_summer_book_card(book, show_add_button=True, compact=True)
