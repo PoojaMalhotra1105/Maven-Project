@@ -493,20 +493,34 @@ st.markdown("""
         animation: fadeInUp 1s ease-out;
     }
     
-    /* Remove extra spacing around captions */
-    .stApp [data-testid="caption"] {
+    /* Aggressive spacing removal */
+    .stApp .main .block-container {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0 !important;
+    }
+    
+    .stApp .element-container {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .stApp div[data-testid="stVerticalBlock"] > div {
+        gap: 0.2rem !important;
+    }
+    
+    .stApp div[data-testid="column"] {
+        padding: 0 !important;
+    }
+    
+    /* Remove all default streamlit spacing */
+    .stApp .stMarkdown {
         margin-bottom: 0 !important;
         padding-bottom: 0 !important;
     }
     
-    /* Reduce spacing in main content */
-    .stApp .main .block-container {
-        padding-top: 1rem !important;
-    }
-    
-    /* Reduce spacing between elements */
-    .stApp .element-container {
-        margin-bottom: 0.5rem !important;
+    .stApp .stText {
+        margin: 0 !important;
+        padding: 0 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -953,8 +967,9 @@ def discover_summer_books():
         st.warning("🔍 No books match your current filters. Try adjusting your search criteria.")
         return
     
-    st.markdown(f'<p style="color: rgba(255,255,255,0.8); font-size: 0.8rem; margin: 0; padding: 0;">📚 Showing {total_results} amazing books</p>', unsafe_allow_html=True)
-    # Display recommendations
+    # Display recommendations with inline count
+    st.markdown(f'<div style="margin: 0; padding: 0;"><p style="color: rgba(255,255,255,0.8); font-size: 0.8rem; margin: 0 0 0.5rem 0; padding: 0;">📚 Showing {total_results} amazing books</p></div>', unsafe_allow_html=True)
+    
     for _, book in recommended_df.head(50).iterrows():
         display_summer_book_card(book, show_add_button=True, compact=True)
 
