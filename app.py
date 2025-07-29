@@ -600,14 +600,14 @@ def discover_summer_books():
                                   index=0)
         
         # Calculate start and end indices
-        start_idx = (page_number - 1) * books_per_page
+    start_idx = (page_number - 1) * books_per_page
         end_idx = min(start_idx + books_per_page, total_results)
         
         # Show current page info
-        st.info(f"Showing books {start_idx + 1} to {end_idx} of {total_results}")
+    st.info(f"Showing books {start_idx + 1} to {end_idx} of {total_results}")
         
         # Get books for current page
-        page_books = recommended_df.iloc[start_idx:end_idx]
+    page_books = recommended_df.iloc[start_idx:end_idx]
     else:
         page_books = recommended_df
     
