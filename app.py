@@ -399,7 +399,7 @@ def get_summer_appeal_score(book):
     return min(5.0, base_score + genre_bonus)
 
 def display_summer_book_card(book, show_add_button=True, compact=False, show_remove_button=False):
-    """Display a summer-themed book card"""
+    """Display a summer-themed book card with cover image"""
     genre_data = book.get('genre', 'Contemporary')
     parsed_genres = parse_genres(genre_data)
     
@@ -416,16 +416,47 @@ def display_summer_book_card(book, show_add_button=True, compact=False, show_rem
     with st.container():
         st.markdown(f'<div class="{card_class}">', unsafe_allow_html=True)
         
+        # Create columns for image and content
         if show_add_button or show_remove_button:
-            col_info, col_action = st.columns([5, 1])
+            col_image, col_info, col_action = st.columns([1, 4, 1])
         else:
-            col_info = st.container()
+            col_image, col_info = st.columns([1, 5])
             col_action = None
         
-        with col_info:
+        # Book cover image
+        with col_image:
+            # Try to get book cover image
             title = str(book.get('title', 'Unknown Title'))
             author = str(book.get('author', 'Unknown Author'))
             
+            # Check for existing image URL in data
+            image_url = book.get('image_url') or book.get('cover_image') or book.get('thumbnail')
+            
+            if image_url and str(image_url) != 'nan' and str(image_url).strip():
+                try:
+                    st.image(image_url, width=80, caption="")
+                except:
+                    # Fallback to placeholder if image fails to load
+                    st.markdown(f"""
+                    <div style="width: 80px; height: 120px; background: linear-gradient(135deg, #FFB347 0%, #FFA500 100%); 
+                                border-radius: 8px; display: flex; align-items: center; justify-content: center; 
+                                color: white; font-size: 0.7rem; text-align: center; font-weight: bold;">
+                        📚<br>Book<br>Cover
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                # Create a beautiful placeholder with book info
+                st.markdown(f"""
+                <div style="width: 80px; height: 120px; background: linear-gradient(135deg, #FFB347 0%, #FFA500 100%); 
+                            border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+                            color: white; font-size: 0.6rem; text-align: center; font-weight: bold; padding: 4px;
+                            box-shadow: 0 4px 8px rgba(255, 165, 0, 0.3);">
+                    <div style="font-size: 1.2rem; margin-bottom: 4px;">📚</div>
+                    <div style="line-height: 1.1; overflow: hidden;">{title[:20]}{'...' if len(title) > 20 else ''}</div>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        with col_info:
             display_title = title if len(title) <= 60 else title[:57] + "..."
             st.markdown(f'<div class="book-title" style="font-size: 1rem; margin-bottom: 0.2rem; color: #FF7043;">{display_title}</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="book-author" style="font-size: 0.8rem; margin-bottom: 0.2rem; color: #8D6E63;">by {author}</div>', unsafe_allow_html=True)
@@ -475,6 +506,7 @@ def display_summer_book_card(book, show_add_button=True, compact=False, show_rem
                                 'average_rating': float(rating) if pd.notna(rating) else None,
                                 'year': year,
                                 'summer_appeal': summer_appeal,
+                                'image_url': image_url,  # Save image URL to reading list
                                 'date_added': datetime.now().strftime("%Y-%m-%d"),
                                 'source': 'recommendations'
                             }
@@ -576,7 +608,6 @@ def discover_summer_books():
     
     # Show default recommendations if no filters applied
     if not search_term and selected_author == 'All Authors' and selected_genre == 'All Genres' and min_rating <= 3.5 and min_summer_score <= 3.5:
-        st.markdown("#### ⭐ Staff Picks - Highly Recommended Summer Reads")
         # Show all books sorted by summer score instead of limiting to 25
         recommended_df = df.sort_values('summer_score', ascending=False)
     
@@ -588,17 +619,8 @@ def discover_summer_books():
         st.warning("🔍 No books match your current filters. Try adjusting your search criteria.")
         return
     
-    # Header with pagination in top right
+    # Header with pagination in top right (no titles)
     header_col1, header_col2 = st.columns([3, 1])
-    
-    with header_col1:
-        # Simple header without overwhelming numbers
-        if total_results == 1:
-            st.markdown(f"### 📖 Found Your Book!")
-        elif total_results <= 20:
-            st.markdown(f"### 📖 {total_results} Great Summer Reads")
-        else:
-            st.markdown(f"### 📖 Summer Reading Recommendations")
     
     # Pagination controls in top right (small)
     books_per_page = 50  # Fixed at 50 books per page
