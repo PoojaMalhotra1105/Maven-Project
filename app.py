@@ -551,8 +551,8 @@ def discover_summer_books():
     # Main search bar
     search_term = st.text_input("🔍 Search books, authors, or genres", placeholder="Try 'beach read', 'thriller', or author name...")
     
-    # Filters in columns
-    col1, col2, col3, col4 = st.columns(4)
+    # Filters in columns (removed genre filter)
+    col1, col2, col3 = st.columns(3)
     
     with col1:
         # Author filter
@@ -563,23 +563,13 @@ def discover_summer_books():
             selected_author = 'All Authors'
     
     with col2:
-        # Genre filter
-        all_genres = set()
-        for genre_data in df['genre'].dropna():
-            parsed_genres = parse_genres(genre_data)
-            all_genres.update(parsed_genres)
-        
-        genres_list = ['All Genres'] + sorted(list(all_genres))
-        selected_genre = st.selectbox("📚 Genre", genres_list)
-    
-    with col3:
         # Rating filter
         if 'average_rating' in df.columns:
             min_rating = st.slider("⭐ Min Rating", 1.0, 5.0, 3.5, step=0.1)
         else:
             min_rating = 1.0
     
-    with col4:
+    with col3:
         # Summer appeal filter
         min_summer_score = st.slider("☀️ Summer Appeal", 1.0, 5.0, 3.5, step=0.1)
     
@@ -599,11 +589,6 @@ def discover_summer_books():
     if selected_author != 'All Authors':
         filtered_df = filtered_df[filtered_df['author'] == selected_author]
     
-    # Genre filter
-    if selected_genre != 'All Genres':
-        genre_mask = filtered_df['genre'].apply(lambda x: selected_genre in parse_genres(x))
-        filtered_df = filtered_df[genre_mask]
-    
     # Rating filter
     if 'average_rating' in filtered_df.columns:
         filtered_df = filtered_df[filtered_df['average_rating'] >= min_rating]
@@ -615,7 +600,7 @@ def discover_summer_books():
     recommended_df = filtered_df.sort_values('summer_score', ascending=False)
     
     # Show default recommendations if no filters applied
-    if not search_term and selected_author == 'All Authors' and selected_genre == 'All Genres' and min_rating <= 3.5 and min_summer_score <= 3.5:
+    if not search_term and selected_author == 'All Authors' and min_rating <= 3.5 and min_summer_score <= 3.5:
         # Show all books sorted by summer score instead of limiting to 25
         recommended_df = df.sort_values('summer_score', ascending=False)
     
