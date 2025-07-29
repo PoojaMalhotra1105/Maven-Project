@@ -21,7 +21,7 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
     
     .stApp {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+        background: linear-gradient(135deg, #87CEEB 0%, #ADD8E6 25%, #FFE4B5 50%, #FFEB3B 75%, #FFF59D 100%);
         background-size: 400% 400%;
         animation: gradientShift 15s ease infinite;
         font-family: 'Poppins', sans-serif;
@@ -62,13 +62,13 @@ st.markdown("""
     }
     
     .sidebar-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #87CEEB 0%, #FFE4B5 100%);
         backdrop-filter: blur(20px);
         padding: 1.2rem;
         border-radius: 15px;
         text-align: center;
         margin-bottom: 1rem;
-        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 8px 32px rgba(135, 206, 235, 0.4);
         position: relative;
         overflow: hidden;
     }
@@ -116,7 +116,7 @@ st.markdown("""
     }
     
     .nav-title {
-        color: #667eea;
+        color: #4682B4;
         font-size: 0.9rem;
         font-weight: 600;
         margin-bottom: 0.5rem;
@@ -145,7 +145,7 @@ st.markdown("""
         left: 0;
         right: 0;
         height: 4px;
-        background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+        background: linear-gradient(90deg, #87CEEB, #ADD8E6, #FFE4B5, #FFEB3B);
         background-size: 300% 100%;
         animation: gradientShift 3s ease infinite;
     }
@@ -153,7 +153,7 @@ st.markdown("""
     .amazing-book-card:hover {
         transform: translateY(-8px) scale(1.02);
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-        border: 1px solid rgba(102, 126, 234, 0.3);
+        border: 1px solid rgba(135, 206, 235, 0.3);
     }
     
     .compact-amazing-card {
@@ -177,7 +177,7 @@ st.markdown("""
         left: 0;
         right: 0;
         height: 3px;
-        background: linear-gradient(90deg, #667eea, #f5576c);
+        background: linear-gradient(90deg, #87CEEB, #FFEB3B);
         background-size: 200% 100%;
         animation: gradientShift 4s ease infinite;
     }
@@ -207,7 +207,7 @@ st.markdown("""
         left: 0;
         right: 0;
         height: 2px;
-        background: linear-gradient(90deg, #764ba2, #f093fb);
+        background: linear-gradient(90deg, #ADD8E6, #FFE4B5);
         background-size: 150% 100%;
         animation: gradientShift 5s ease infinite;
     }
@@ -238,13 +238,13 @@ st.markdown("""
         left: 0;
         right: 0;
         height: 5px;
-        background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe);
+        background: linear-gradient(90deg, #87CEEB, #ADD8E6, #FFE4B5, #FFEB3B, #FFF59D);
         background-size: 400% 100%;
         animation: gradientShift 6s ease infinite;
     }
     
     .amazing-empty-state h3 {
-        color: #667eea;
+        color: #4682B4;
         font-weight: 600;
         margin-bottom: 1.5rem;
         font-size: 1.6rem;
@@ -275,11 +275,11 @@ st.markdown("""
     }
     
     .stat-number {
-        color: #667eea;
+        color: #4682B4;
         font-size: 1.8rem;
         font-weight: 700;
         margin-bottom: 0.3rem;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, #4682B4, #FFD700);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -301,7 +301,7 @@ st.markdown("""
         background: rgba(255, 255, 255, 0.9);
         backdrop-filter: blur(10px);
         border-radius: 10px;
-        border-left: 4px solid #667eea;
+        border-left: 4px solid #4682B4;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         transition: all 0.2s ease;
     }
@@ -313,22 +313,22 @@ st.markdown("""
     
     .amazing-recommendation {
         background: rgba(255, 255, 255, 0.96);
-        border: 2px solid rgba(102, 126, 234, 0.2);
+        border: 2px solid rgba(135, 206, 235, 0.2);
         border-radius: 16px;
         padding: 1.5rem;
         margin: 1rem 0;
-        box-shadow: 0 8px 30px rgba(102, 126, 234, 0.1);
+        box-shadow: 0 8px 30px rgba(135, 206, 235, 0.1);
         transition: all 0.3s ease;
         animation: fadeInUp 0.5s ease-out;
     }
     
     .amazing-recommendation:hover {
         transform: translateY(-2px);
-        box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
+        box-shadow: 0 12px 40px rgba(135, 206, 235, 0.15);
     }
     
     .amazing-genre-tag {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #4682B4 0%, #FFD700 100%);
         color: white;
         padding: 0.3rem 0.8rem;
         border-radius: 25px;
@@ -336,7 +336,7 @@ st.markdown("""
         font-weight: 500;
         margin: 0.2rem;
         display: inline-block;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 4px 15px rgba(70, 130, 180, 0.3);
         transition: transform 0.2s ease;
     }
     
@@ -349,17 +349,17 @@ st.markdown("""
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         transition: all 0.3s ease;
         border: 2px solid rgba(255, 255, 255, 0.5);
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #87CEEB 0%, #FFE4B5 100%);
         overflow: hidden;
     }
     
     .amazing-book-cover:hover {
         transform: scale(1.05) rotate(2deg);
-        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 12px 35px rgba(135, 206, 235, 0.4);
     }
     
     .amazing-placeholder {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        background: linear-gradient(135deg, #87CEEB 0%, #FFE4B5 50%, #FFEB3B 100%);
         border-radius: 12px;
         display: flex;
         flex-direction: column;
@@ -369,7 +369,7 @@ st.markdown("""
         font-weight: 600;
         text-align: center;
         padding: 8px;
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 8px 25px rgba(135, 206, 235, 0.3);
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
@@ -388,7 +388,7 @@ st.markdown("""
     
     .amazing-placeholder:hover {
         transform: scale(1.02);
-        box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 12px 35px rgba(135, 206, 235, 0.4);
     }
     
     .book-title {
@@ -421,24 +421,24 @@ st.markdown("""
     }
     
     .stButton > button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #4682B4 0%, #FFD700 100%);
         border: none;
         border-radius: 25px;
         padding: 0.4rem 1rem;
         color: white;
         font-weight: 600;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 4px 15px rgba(70, 130, 180, 0.3);
     }
     
     .stButton > button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        box-shadow: 0 8px 25px rgba(70, 130, 180, 0.4);
+        background: linear-gradient(135deg, #FFD700 0%, #4682B4 100%);
     }
     
     .stProgress .stProgress-bar {
-        background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+        background: linear-gradient(90deg, #87CEEB, #ADD8E6, #FFE4B5, #FFEB3B);
         background-size: 200% 100%;
         animation: gradientShift 2s ease infinite;
     }
@@ -446,25 +446,25 @@ st.markdown("""
     /* Enhanced input styles */
     .stTextInput > div > div > input {
         background: rgba(255, 255, 255, 0.9);
-        border: 2px solid rgba(102, 126, 234, 0.2);
+        border: 2px solid rgba(135, 206, 235, 0.2);
         border-radius: 12px;
         padding: 0.8rem;
         transition: all 0.3s ease;
     }
     
     .stTextInput > div > div > input:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+        border-color: #4682B4;
+        box-shadow: 0 0 20px rgba(135, 206, 235, 0.2);
     }
     
     .stSelectbox > div > div > div {
         background: rgba(255, 255, 255, 0.9);
-        border: 2px solid rgba(102, 126, 234, 0.2);
+        border: 2px solid rgba(135, 206, 235, 0.2);
         border-radius: 12px;
     }
     
     .stSlider > div > div > div {
-        background: linear-gradient(90deg, #667eea, #764ba2);
+        background: linear-gradient(90deg, #4682B4, #FFD700);
     }
     
     /* Page header styling */
@@ -477,7 +477,7 @@ st.markdown("""
     .page-title {
         font-size: 2.5rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+        background: linear-gradient(135deg, #4682B4, #FFD700, #FFEB3B);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -1016,8 +1016,6 @@ def display_summer_reading_list():
     # Progress bar
     st.progress(progress / 100)
     st.caption(f"🎯 {total_books} of {summer_goal} books added to your reading list")
-    
-    st.markdown("---")
 
     # Filters for the list
     col1, col2 = st.columns(2)
@@ -1126,13 +1124,12 @@ def show_summer_insights():
                         <strong>{book['title']}</strong><br>
                         <em>by {book['author']}</em><br>
                         <span class="amazing-genre-tag">{genre_display}</span>
-                        <span style="color: #667eea;">⭐ {book['average_rating']:.1f}</span>
+                        <span style="color: #4682B4;">⭐ {book['average_rating']:.1f}</span>
                     </div>
                     """, unsafe_allow_html=True)
     
     # Personal reading analytics
     if st.session_state.summer_reading_list:
-        st.markdown("---")
         st.markdown("#### 🎯 Your Reading Profile")
         summer_books_df = pd.DataFrame(st.session_state.summer_reading_list)
         
@@ -1269,9 +1266,8 @@ def main():
         show_summer_insights()
     
     # Footer
-    st.sidebar.markdown("---")
     st.sidebar.markdown("""
-    <div style='text-align: center; color: #64748b; font-size: 0.7rem; background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%); backdrop-filter: blur(10px); padding: 12px; border-radius: 12px; border: 1px solid rgba(102, 126, 234, 0.2); box-shadow: 0 4px 20px rgba(102, 126, 234, 0.1);'>
+    <div style='text-align: center; color: #64748b; font-size: 0.7rem; background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%); backdrop-filter: blur(10px); padding: 12px; border-radius: 12px; border: 1px solid rgba(135, 206, 235, 0.2); box-shadow: 0 4px 20px rgba(135, 206, 235, 0.1);'>
         <p style='margin: 0; font-weight: 600;'>✨ Amazing Book Discovery</p>
         <p style='margin: 4px 0 0 0; opacity: 0.8;'>Discover your next incredible read!</p>
     </div>
