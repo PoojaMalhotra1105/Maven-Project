@@ -588,16 +588,47 @@ def discover_summer_books():
         st.warning("🔍 No books match your current filters. Try adjusting your search criteria.")
         return
     
-    # Simple header without overwhelming numbers
-    if total_results == 1:
-        st.markdown(f"### 📖 Found Your Book!")
-    elif total_results <= 20:
-        st.markdown(f"### 📖 {total_results} Great Summer Reads")
-    else:
-        st.markdown(f"### 📖 Summer Reading Recommendations")
+    # Header with pagination in top right
+    header_col1, header_col2 = st.columns([3, 1])
     
-    # Show all books without pagination
-    page_books = recommended_df
+    with header_col1:
+        # Simple header without overwhelming numbers
+        if total_results == 1:
+            st.markdown(f"### 📖 Found Your Book!")
+        elif total_results <= 20:
+            st.markdown(f"### 📖 {total_results} Great Summer Reads")
+        else:
+            st.markdown(f"### 📖 Summer Reading Recommendations")
+    
+    # Pagination controls in top right (small)
+    books_per_page = 50  # Fixed at 50 books per page
+    
+    with header_col2:
+        if total_results > books_per_page:
+            # Calculate total pages
+            total_pages = (total_results - 1) // books_per_page + 1
+            
+            # Small page selector in top right
+            page_number = st.selectbox("Page", 
+                                       options=list(range(1, total_pages + 1)), 
+                                       index=0,
+                                       key="page_selector")
+            
+            # Calculate start and end indices
+            start_idx = (page_number - 1) * books_per_page
+            end_idx = min(start_idx + books_per_page, total_results)
+            
+            # Show all books for current page
+            page_books = recommended_df.iloc[start_idx:end_idx]
+            
+            # Small info below page selector
+            st.caption(f"{start_idx + 1}-{end_idx} of {total_results}")
+        else:
+            page_books = recommended_df
+            st.write("")  # Empty space to align with other column
+    
+    if total_results <= books_per_page:
+        page_books = recommended_df
     
     # Display recommendations
     for _, book in page_books.iterrows():
