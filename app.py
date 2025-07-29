@@ -1,4 +1,8 @@
-mport random
+import streamlit as st
+import pandas as pd
+import json
+import os
+import random
 from datetime import datetime
 from pathlib import Path
 import base64
@@ -802,7 +806,7 @@ def display_summer_book_card(book, show_add_button=True, compact=False, show_rem
                                     for book in st.session_state.summer_reading_list)
                     
                     if not book_exists:
-                        if st.button("➕", key=f"add_{book_id}", type="secondary", help="Add to Summer List"):
+                        if st.button("➕", key=f"add_{book_id}", type="secondary", help="Add to Reading List"):
                             new_book = {
                                 'id': len(st.session_state.summer_reading_list) + 1,
                                 'work_id': book_id,
@@ -819,14 +823,14 @@ def display_summer_book_card(book, show_add_button=True, compact=False, show_rem
                             }
                             st.session_state.summer_reading_list.append(new_book)
                             save_summer_list()
-                            st.success(f"Added '{title}' to your summer reading list! ☀️")
+                            st.success(f"Added '{title}' to your reading list! ✨")
                             st.rerun()
                     else:
                         st.markdown("✅")
                 
                 elif show_remove_button:
                     book_id = book.get('work_id', f"{title}_{author}")
-                    if st.button("🗑️", key=f"remove_{book_id}", type="secondary", help="Remove from Summer List"):
+                    if st.button("🗑️", key=f"remove_{book_id}", type="secondary", help="Remove from Reading List"):
                         st.session_state.summer_reading_list = [
                             b for b in st.session_state.summer_reading_list
                             if not (b.get('work_id', f"{b['title']}_{b['author']}") == book_id)
@@ -837,7 +841,7 @@ def display_summer_book_card(book, show_add_button=True, compact=False, show_rem
         st.markdown('</div>', unsafe_allow_html=True)
 
 def discover_summer_books():
-    """Discover summer reading recommendations"""
+    """Discover amazing books"""
     
     # Amazing page header
     st.markdown("""
@@ -867,27 +871,6 @@ def discover_summer_books():
     recommended_df = filtered_df.sort_values('summer_score', ascending=False)
     total_results = len(recommended_df)
     
-    # Header with title and pagination
-    header_col1, header_col2 = st.columns([2, 1])
-    
-    with header_col1:
-        st.markdown("### ☀️ Discover Summer Books")
-    
-    with header_col2:
-        # Pagination controls next to title
-        books_per_page = 50  # Fixed at 50 books per page
-        page_number = 1  # Default page
-        
-        if total_results > books_per_page:
-            # Calculate total pages
-            total_pages = (total_results - 1) // books_per_page + 1
-            
-            # Page selector next to title
-            page_number = st.selectbox("📄 Page", 
-                                       options=list(range(1, total_pages + 1)), 
-                                       index=0,
-                                       key="page_selector")
-    
     # Search and filter section with amazing styling
     st.markdown('<div class="search-container">', unsafe_allow_html=True)
     
@@ -913,7 +896,7 @@ def discover_summer_books():
             min_rating = 1.0
     
     with col3:
-        # Summer appeal filter
+        # Appeal filter
         min_summer_score = st.slider("✨ Reading Appeal", 1.0, 5.0, 3.5, step=0.1, key="summer_score_filter")
     
     st.markdown('</div>', unsafe_allow_html=True)
@@ -938,15 +921,15 @@ def discover_summer_books():
     if 'average_rating' in filtered_df.columns:
         filtered_df = filtered_df[filtered_df['average_rating'] >= min_rating]
     
-    # Summer appeal filter
+    # Appeal filter
     filtered_df = filtered_df[filtered_df['summer_score'] >= min_summer_score]
     
-    # Sort by summer score
+    # Sort by appeal score
     recommended_df = filtered_df.sort_values('summer_score', ascending=False)
     
     # Show default recommendations if no filters applied
     if not search_term and selected_author == 'All Authors' and min_rating <= 3.5 and min_summer_score <= 3.5:
-        # Show all books sorted by summer score instead of limiting to 25
+        # Show all books sorted by score
         recommended_df = df.sort_values('summer_score', ascending=False)
     
     # Update total results after filtering
@@ -957,27 +940,14 @@ def discover_summer_books():
         st.warning("🔍 No books match your current filters. Try adjusting your search criteria.")
         return
     
-    # Calculate pagination after filtering
-    if total_results > books_per_page:
-        # Calculate start and end indices
-        start_idx = (page_number - 1) * books_per_page
-        end_idx = min(start_idx + books_per_page, total_results)
-        
-        # Show books for current page
-        page_books = recommended_df.iloc[start_idx:end_idx]
-        
-        # Show pagination info
-        st.caption(f"📚 Showing {start_idx + 1}-{end_idx} of {total_results} books")
-    else:
-        page_books = recommended_df
-        st.caption(f"📚 Showing all {total_results} books")
+    st.caption(f"📚 Showing {total_results} amazing books")
     
     # Display recommendations
-    for _, book in page_books.iterrows():
+    for _, book in recommended_df.head(50).iterrows():
         display_summer_book_card(book, show_add_button=True, compact=True)
 
 def display_summer_reading_list():
-    """Display and manage the summer reading list"""
+    """Display and manage the reading list"""
     
     # Amazing page header
     st.markdown("""
@@ -990,22 +960,22 @@ def display_summer_reading_list():
     if not st.session_state.summer_reading_list:
         st.markdown("""
         <div class="amazing-empty-state">
-            <h3>☀️ Your summer reading adventure awaits!</h3>
-            <p>Start building your perfect summer reading list by discovering books that match your mood and interests.</p>
-            <p>🌅 Head over to 'Discover Summer Books' to find your next great read!</p>
+            <h3>✨ Your reading adventure awaits!</h3>
+            <p>Start building your perfect reading list by discovering books that match your mood and interests.</p>
+            <p>🌅 Head over to 'Discover Amazing Books' to find your next great read!</p>
         </div>
         """, unsafe_allow_html=True)
         return
 
     summer_books_df = pd.DataFrame(st.session_state.summer_reading_list)
 
-    # Summer reading stats
+    # Reading stats
     total_books = len(summer_books_df)
     avg_rating = summer_books_df['rating'].mean() if not summer_books_df.empty else 0
     unique_authors = summer_books_df['author'].nunique() if 'author' in summer_books_df.columns else 0
     
     # Calculate reading goal progress
-    summer_goal = st.sidebar.number_input("📚 Summer Reading Goal", min_value=1, max_value=50, value=10, key="summer_goal_input")
+    summer_goal = st.sidebar.number_input("📚 Reading Goal", min_value=1, max_value=50, value=10, key="summer_goal_input")
     progress = min(100, (total_books / summer_goal) * 100)
     
     # Display stats
@@ -1045,18 +1015,18 @@ def display_summer_reading_list():
     
     # Progress bar
     st.progress(progress / 100)
-    st.caption(f"🎯 {total_books} of {summer_goal} books added to your summer list")
+    st.caption(f"🎯 {total_books} of {summer_goal} books added to your reading list")
     
     st.markdown("---")
 
     # Filters for the list
     col1, col2 = st.columns(2)
     with col1:
-        search_summer_books = st.text_input("Search your summer list", placeholder="Title or author...", key="search_list_input")
+        search_summer_books = st.text_input("Search your reading list", placeholder="Title or author...", key="search_list_input")
     with col2:
         min_rating = st.slider("Minimum Rating", 1, 5, 1, key="min_rating_filter")
 
-    # Apply filters to summer list
+    # Apply filters to reading list
     filtered_books = summer_books_df.copy()
     if search_summer_books:
         mask = (
@@ -1067,8 +1037,8 @@ def display_summer_reading_list():
     
     filtered_books = filtered_books[filtered_books['rating'] >= min_rating]
 
-    # Display summer reading list
-    st.markdown("### 📚 Your Curated Summer Collection")
+    # Display reading list
+    st.markdown("### 📚 Your Curated Collection")
     
     if len(filtered_books) == 0:
         st.info("🔍 No books match your filters. Try adjusting your search.")
@@ -1094,7 +1064,7 @@ def display_summer_reading_list():
             display_summer_book_card(book, show_add_button=False, show_remove_button=True, compact=True)
 
 def show_summer_insights():
-    """Show summer reading insights and recommendations"""
+    """Show reading insights and recommendations"""
     
     # Amazing page header
     st.markdown("""
@@ -1104,49 +1074,49 @@ def show_summer_insights():
     </div>
     """, unsafe_allow_html=True)
     
-    # Dataset analytics for summer reading
+    # Dataset analytics
     if not st.session_state.books_df.empty:
-        st.markdown("#### 🌞 Summer Reading Trends")
+        st.markdown("#### 📚 Reading Trends")
         df = st.session_state.books_df.copy()
         
-        # Calculate summer appeal scores for all books
+        # Calculate appeal scores for all books
         df['summer_score'] = df.apply(get_summer_appeal_score, axis=1)
         
         col1, col2 = st.columns(2)
         
         with col1:
-            # Most summer-friendly genres
-            genre_summer_scores = {}
+            # Most appealing genres
+            genre_scores = {}
             for _, row in df.iterrows():
                 genre_data = row['genre']
                 parsed_genres = parse_genres(genre_data)
                 summer_score = row['summer_score']
                 
                 for genre in parsed_genres:
-                    if genre not in genre_summer_scores:
-                        genre_summer_scores[genre] = []
-                    genre_summer_scores[genre].append(summer_score)
+                    if genre not in genre_scores:
+                        genre_scores[genre] = []
+                    genre_scores[genre].append(summer_score)
             
-            # Calculate average summer scores by genre
+            # Calculate average scores by genre
             avg_genre_scores = {
                 genre: sum(scores) / len(scores) 
-                for genre, scores in genre_summer_scores.items() 
+                for genre, scores in genre_scores.items() 
                 if len(scores) >= 3  # Only include genres with at least 3 books
             }
             
             if avg_genre_scores:
-                st.markdown("##### 🏖️ Best Summer Genres")
+                st.markdown("##### 📖 Best Genres")
                 sorted_genres = sorted(avg_genre_scores.items(), key=lambda x: x[1], reverse=True)[:8]
-                genre_chart_data = pd.DataFrame(sorted_genres, columns=['Genre', 'Summer Appeal Score'])
-                st.bar_chart(genre_chart_data.set_index('Genre')['Summer Appeal Score'])
+                genre_chart_data = pd.DataFrame(sorted_genres, columns=['Genre', 'Appeal Score'])
+                st.bar_chart(genre_chart_data.set_index('Genre')['Appeal Score'])
         
         with col2:
-            # Summer reading recommendations by rating
-            st.markdown("##### ⭐ Highly Rated Summer Books")
-            top_summer_books = df[df['summer_score'] >= 4.2].nlargest(10, 'average_rating')
+            # Highly rated books
+            st.markdown("##### ⭐ Highly Rated Books")
+            top_books = df[df['summer_score'] >= 4.2].nlargest(10, 'average_rating')
             
-            if not top_summer_books.empty:
-                for _, book in top_summer_books.head(5).iterrows():
+            if not top_books.empty:
+                for _, book in top_books.head(5).iterrows():
                     genre_data = book.get('genre', 'Contemporary')
                     parsed_genres = parse_genres(genre_data)
                     genre_display = parsed_genres[0] if parsed_genres else 'Contemporary'
@@ -1160,90 +1130,44 @@ def show_summer_insights():
                     </div>
                     """, unsafe_allow_html=True)
     
-    # Personal summer reading analytics
+    # Personal reading analytics
     if st.session_state.summer_reading_list:
         st.markdown("---")
-        st.markdown("#### 🏖️ Your Summer Reading Profile")
+        st.markdown("#### 🎯 Your Reading Profile")
         summer_books_df = pd.DataFrame(st.session_state.summer_reading_list)
         
         col1, col2 = st.columns(2)
         
         with col1:
-            # Genre distribution in summer list
-            summer_genres = {}
+            # Genre distribution
+            genres = {}
             for book in st.session_state.summer_reading_list:
                 genre_data = book.get('genre', 'Contemporary')
                 parsed_genres = parse_genres(genre_data)
                 for genre in parsed_genres:
-                    summer_genres[genre] = summer_genres.get(genre, 0) + 1
+                    genres[genre] = genres.get(genre, 0) + 1
             
-            if summer_genres:
-                st.markdown("##### 📚 Your Summer Genre Mix")
-                summer_genre_df = pd.DataFrame(list(summer_genres.items()), columns=['Genre', 'Count'])
-                st.bar_chart(summer_genre_df.set_index('Genre')['Count'])
+            if genres:
+                st.markdown("##### 📚 Your Genre Mix")
+                genre_df = pd.DataFrame(list(genres.items()), columns=['Genre', 'Count'])
+                st.bar_chart(genre_df.set_index('Genre')['Count'])
         
         with col2:
             # Rating distribution
             rating_counts = summer_books_df['rating'].value_counts().sort_index()
-            st.markdown("##### ⭐ Your Summer Ratings")
+            st.markdown("##### ⭐ Your Ratings")
             rating_labels = {1: '1⭐', 2: '2⭐', 3: '3⭐', 4: '4⭐', 5: '5⭐'}
             rating_counts.index = rating_counts.index.map(rating_labels)
             st.bar_chart(rating_counts)
         
-        # Summer reading timeline
-        summer_books_df['date_added'] = pd.to_datetime(summer_books_df['date_added'])
-        books_per_day = summer_books_df.groupby(summer_books_df['date_added'].dt.date).size()
-        
-        if len(books_per_day) > 1:
-            st.markdown("##### 📈 List Building Progress")
-            st.line_chart(books_per_day)
-        
-        # Summer reading recommendations based on preferences
-        st.markdown("##### 🌅 Personalized Summer Recommendations")
-        
-        # Analyze user's genre preferences
-        user_favorite_genres = list(summer_genres.keys())[:3] if summer_genres else ['Romance', 'Contemporary']
-        
-        # Find books that match user preferences but aren't in their list
-        if not st.session_state.books_df.empty:
-            df = st.session_state.books_df.copy()
-            df['summer_score'] = df.apply(get_summer_appeal_score, axis=1)
-            
-            # Get existing book IDs in summer list
-            existing_ids = {book.get('work_id', f"{book['title']}_{book['author']}") for book in st.session_state.summer_reading_list}
-            
-            # Filter recommendations
-            recommendations = []
-            for _, book in df.iterrows():
-                book_id = book.get('work_id', f"{book['title']}_{book['author']}")
-                if book_id not in existing_ids:
-                    genre_data = book.get('genre', 'Contemporary')
-                    parsed_genres = parse_genres(genre_data)
-                    
-                    # Check if book matches user's preferred genres
-                    genre_match = any(user_genre in genre for user_genre in user_favorite_genres for genre in parsed_genres)
-                    
-                    if genre_match and book['summer_score'] >= 4.0:
-                        recommendations.append(book)
-            
-            # Sort by summer score and display top 3
-            recommendations.sort(key=lambda x: x['summer_score'], reverse=True)
-            
-            if recommendations:
-                st.markdown("Based on your current list, you might enjoy:")
-                for book in recommendations[:3]:
-                    display_summer_book_card(book, show_add_button=True, compact=True)
-            else:
-                st.info("🎉 Great selection! You've already found some excellent summer reads.")
-        
-        # Summer reading tips
-        st.markdown("##### 💡 Summer Reading Tips")
+        # Reading tips
+        st.markdown("##### 💡 Reading Tips")
         tips = [
-            "🏖️ Beach reads should be engaging but not too complex!",
-            "📱 Download audiobooks for road trips and walks", 
-            "🌙 Keep a shorter book for bedtime reading",
-            "☀️ Mix genres to match different summer moods",
-            "👥 Join online book clubs for summer discussions"
+            "✨ Choose books that spark your curiosity and imagination!",
+            "📚 Mix different genres to keep your reading fresh and exciting",
+            "⏰ Set achievable reading goals and celebrate your progress",
+            "🎧 Audiobooks are perfect for multitasking and commuting",
+            "👥 Join online book communities for amazing discussions!"
         ]
         
         for tip in tips:
@@ -1252,14 +1176,14 @@ def show_summer_insights():
     else:
         st.markdown("""
         <div class="amazing-empty-state">
-            <h3>📊 Start tracking your summer reading!</h3>
-            <p>Add books to your summer reading list to see personalized insights and recommendations.</p>
+            <h3>📊 Start tracking your reading!</h3>
+            <p>Add books to your reading list to see personalized insights and recommendations.</p>
         </div>
         """, unsafe_allow_html=True)
 
 def main():
     """Main application"""
-    # Load summer reading list on startup
+    # Load reading list on startup
     if not st.session_state.summer_reading_list:
         st.session_state.summer_reading_list = load_summer_list()
     
@@ -1291,7 +1215,7 @@ def main():
         "Reading Analytics"
     ], key="main_nav")
     
-    # Show recent additions to summer list
+    # Show recent additions
     if st.session_state.summer_reading_list and len(st.session_state.summer_reading_list) > 0:
         st.sidebar.markdown("""
         <div class="navigation-section">
