@@ -588,26 +588,30 @@ def discover_summer_books():
         st.warning("🔍 No books match your current filters. Try adjusting your search criteria.")
         return
     
+    # Result count message
+    st.markdown(f"### 📖 {total_results} Books Found")
     
     # Optional: Add pagination for very large datasets
     books_per_page = st.sidebar.number_input("📖 Books per page", min_value=10, max_value=200, value=50)
     
-
+    if total_results > books_per_page:
+        # Calculate total pages
+        total_pages = (total_results - 1) // books_per_page + 1
         
         # Page selector
-    page_number = st.selectbox(f"📄 Page (1 to {total_pages})", 
-                                  options=list(range(1, total_pages + 1)), 
-                                  index=0)
+        page_number = st.selectbox(f"📄 Page (1 to {total_pages})", 
+                                   options=list(range(1, total_pages + 1)), 
+                                   index=0)
         
         # Calculate start and end indices
-    start_idx = (page_number - 1) * books_per_page
+        start_idx = (page_number - 1) * books_per_page
         end_idx = min(start_idx + books_per_page, total_results)
         
         # Show current page info
-    st.info(f"Showing books {start_idx + 1} to {end_idx} of {total_results}")
+        st.info(f"Showing books {start_idx + 1} to {end_idx} of {total_results}")
         
         # Get books for current page
-    page_books = recommended_df.iloc[start_idx:end_idx]
+        page_books = recommended_df.iloc[start_idx:end_idx]
     else:
         page_books = recommended_df
     
