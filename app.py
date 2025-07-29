@@ -226,62 +226,164 @@ summer_genre_icons = {
     "Beach Read": "🏖️", "Light Fiction": "☀️", "Escapist": "🌴", "Feel-Good": "🌈"
 }
 
+def generate_summer_appeal(title, author, genre, rating):
+    """Generate summer appeal description based on book characteristics"""
+    appeal_templates = {
+        'Romance': ['Perfect summer romance', 'Heartwarming love story', 'Romantic escapism'],
+        'Mystery': ['Gripping page-turner', 'Perfect poolside thriller', 'Engaging mystery'],
+        'Fantasy': ['Magical escapism', 'Enchanting fantasy adventure', 'Immersive world-building'],
+        'Science Fiction': ['Thought-provoking sci-fi', 'Futuristic adventure', 'Mind-bending concepts'],
+        'Historical Fiction': ['Rich historical detail', 'Immersive period setting', 'Captivating historical tale'],
+        'Contemporary': ['Relatable modern story', 'Engaging contemporary fiction', 'Perfect light read'],
+        'Literary Fiction': ['Beautiful prose', 'Thought-provoking narrative', 'Award-worthy writing'],
+        'Thriller': ['Heart-pounding suspense', 'Edge-of-your-seat thriller', 'Addictive page-turner'],
+        'Young Adult': ['Coming-of-age story', 'Perfect YA adventure', 'Engaging young adult fiction'],
+        'Biography': ['Inspiring life story', 'Fascinating biography', 'Compelling personal journey'],
+        'Memoir': ['Personal and moving', 'Inspiring memoir', 'Honest and engaging'],
+        'Self-Help': ['Life-changing insights', 'Practical guidance', 'Motivational read']
+    }
+    
+    # Try to match genre with templates
+    for genre_key, templates in appeal_templates.items():
+        if genre_key.lower() in str(genre).lower():
+            base_appeal = random.choice(templates)
+            break
+    else:
+        base_appeal = 'Great for summer reading'
+    
+    # Add rating-based modifiers
+    try:
+        rating_val = float(rating) if pd.notna(rating) else 3.5
+        if rating_val >= 4.5:
+            base_appeal = f"Highly acclaimed - {base_appeal.lower()}"
+        elif rating_val >= 4.0:
+            base_appeal = f"Popular choice - {base_appeal.lower()}"
+    except:
+        pass
+    
+    return base_appeal
+
 def load_sample_summer_data():
-    """Load sample summer reading data"""
+    """Load expanded sample summer reading data with more variety"""
+    # Expanded dataset with more books across different genres
     summer_books = {
         'title': [
-            'Beach Read', 'The Seven Husbands of Evelyn Hugo', 'Where the Crawdads Sing', 
-            'The Summer I Turned Pretty', 'It Ends with Us', 'The Midnight Library',
-            'Project Hail Mary', 'Klara and the Sun', 'The Invisible Life of Addie LaRue',
-            'The Guest List', 'Malibu Rising', 'The Sanatoriums', 'The Thursday Murder Club',
-            'Educated', 'Atomic Habits', 'Becoming', 'The Alchemist', 'Big Little Lies',
-            'Gone Girl', 'The Girl on the Train'
+            # Romance & Contemporary
+            'Beach Read', 'The Seven Husbands of Evelyn Hugo', 'It Ends with Us', 'The Hating Game',
+            'Red, White & Royal Blue', 'The Kiss Quotient', 'Beach House Summer', 'Summer Sisters',
+            'The Summer House', 'One Last Stop', 'People We Meet on Vacation', 'Book Lovers',
+            
+            # Mystery & Thriller
+            'Where the Crawdads Sing', 'The Guest List', 'The Sanatorium', 'The Thursday Murder Club',
+            'Gone Girl', 'The Girl on the Train', 'Big Little Lies', 'The Woman in the Window',
+            'In the Woods', 'The Silent Patient', 'The Girl with the Dragon Tattoo', 'Sharp Objects',
+            
+            # Fantasy & Sci-Fi
+            'The Invisible Life of Addie LaRue', 'Project Hail Mary', 'Klara and the Sun', 'The Midnight Library',
+            'The Seven Moons of Maali Almeida', 'Station Eleven', 'The Time Traveler\'s Wife', 'Circe',
+            'The Night Circus', 'The Priory of the Orange Tree', 'The Fifth Season', 'Dune',
+            
+            # Young Adult
+            'The Summer I Turned Pretty', 'The Cruel Prince', 'Six of Crows', 'The Hate U Give',
+            'Eleanor Oliphant Is Completely Fine', 'Me Before You', 'The Fault in Our Stars', 'To All the Boys I\'ve Loved Before',
+            
+            # Literary Fiction
+            'Normal People', 'Educated', 'Becoming', 'The Alchemist', 'A Man Called Ove',
+            'The Kite Runner', 'Life of Pi', 'The Book Thief', 'The Help', 'Little Fires Everywhere',
+            
+            # Historical Fiction
+            'The Nightingale', 'All the Light We Cannot See', 'Pachinko', 'The Pillars of the Earth',
+            'Outlander', 'The English Patient', 'Cold Mountain', 'The Other Boleyn Girl',
+            
+            # Non-Fiction
+            'Atomic Habits', 'Sapiens', 'Wild', 'Untamed',
+            'Maybe You Should Talk to Someone', 'The Body Keeps the Score', 'Thinking, Fast and Slow'
         ],
         'author': [
-            'Emily Henry', 'Taylor Jenkins Reid', 'Delia Owens', 'Jenny Han', 
-            'Colleen Hoover', 'Matt Haig', 'Andy Weir', 'Kazuo Ishiguro',
-            'V.E. Schwab', 'Lucy Foley', 'Taylor Jenkins Reid', 'Sarah Pearse',
-            'Richard Osman', 'Tara Westover', 'James Clear', 'Michelle Obama',
-            'Paulo Coelho', 'Liane Moriarty', 'Gillian Flynn', 'Paula Hawkins'
+            # Corresponding authors
+            'Emily Henry', 'Taylor Jenkins Reid', 'Colleen Hoover', 'Sally Thorne',
+            'Casey McQuiston', 'Helen Hoang', 'Jennifer Probst', 'Judy Blume',
+            'Sarah Morgan', 'Casey McQuiston', 'Emily Henry', 'Emily Henry',
+            
+            'Delia Owens', 'Lucy Foley', 'Sarah Pearse', 'Richard Osman',
+            'Gillian Flynn', 'Paula Hawkins', 'Liane Moriarty', 'A.J. Finn',
+            'Tana French', 'Alex Michaelides', 'Stieg Larsson', 'Gillian Flynn',
+            
+            'V.E. Schwab', 'Andy Weir', 'Kazuo Ishiguro', 'Matt Haig',
+            'Shehan Karunatilaka', 'Emily St. John Mandel', 'Audrey Niffenegger', 'Madeline Miller',
+            'Erin Morgenstern', 'Samantha Shannon', 'N.K. Jemisin', 'Frank Herbert',
+            
+            'Jenny Han', 'Holly Black', 'Leigh Bardugo', 'Angie Thomas',
+            'Gail Honeyman', 'Jojo Moyes', 'John Green', 'Jenny Han',
+            
+            'Sally Rooney', 'Tara Westover', 'Michelle Obama', 'Paulo Coelho', 'Fredrik Backman',
+            'Khaled Hosseini', 'Yann Martel', 'Markus Zusak', 'Kathryn Stockett', 'Celeste Ng',
+            
+            'Kristin Hannah', 'Anthony Doerr', 'Min Jin Lee', 'Ken Follett',
+            'Diana Gabaldon', 'Michael Ondaatje', 'Charles Frazier', 'Philippa Gregory',
+            
+            'James Clear', 'Yuval Noah Harari', 'Cheryl Strayed', 'Glennon Doyle',
+            'Lori Gottlieb', 'Bessel van der Kolk', 'Daniel Kahneman'
         ],
         'year': [
-            2020, 2017, 2018, 2009, 2016, 2020, 2021, 2021, 2020, 2020,
-            2021, 2021, 2020, 2018, 2018, 2018, 1988, 2014, 2012, 2015
+            # Corresponding years (approximated for variety)
+            2020, 2017, 2016, 2016, 2019, 2018, 2021, 1998, 2020, 2021, 2021, 2022,
+            2018, 2020, 2021, 2020, 2012, 2015, 2014, 2018, 2007, 2019, 2005, 2006,
+            2020, 2021, 2021, 2020, 2022, 2014, 2003, 2011, 2011, 2019, 2015, 1965,
+            2009, 2018, 2015, 2017, 2017, 2014, 2012, 2014,
+            2018, 2018, 2018, 1988, 2012, 2003, 2001, 2005, 2009, 2017,
+            2015, 2014, 2017, 1989, 1991, 1992, 1996, 2001,
+            2018, 2011, 2012, 2020, 2019, 2014, 2011
         ],
         'average_rating': [
-            4.05, 4.25, 4.41, 4.20, 4.30, 4.15, 4.52, 4.01, 4.28, 4.01,
-            3.95, 3.91, 4.26, 4.47, 4.34, 4.44, 3.88, 4.05, 4.08, 3.88
-        ],
-        'genre': [
-            'Romance', 'Contemporary', 'Literary Fiction', 'Young Adult',
-            'Romance', 'Literary Fiction', 'Science Fiction', 'Literary Fiction',
-            'Fantasy', 'Mystery', 'Contemporary', 'Thriller', 'Mystery',
-            'Memoir', 'Self-Help', 'Biography', 'Philosophy', 'Contemporary',
-            'Thriller', 'Mystery'
-        ],
-        'summer_appeal': [
-            'Perfect beach read with romance and humor',
-            'Glamorous Hollywood story, great for poolside',
-            'Beautiful nature writing, atmospheric',
-            'Coming-of-age summer romance classic',
-            'Emotional contemporary romance',
-            'Thought-provoking yet accessible',
-            'Fun space adventure with humor',
-            'Gentle literary fiction',
-            'Magical historical fantasy',
-            'Gripping thriller set on an island',
-            'Family drama set in Malibu',
-            'Atmospheric thriller in the Alps',
-            'Cozy British mystery series',
-            'Inspiring memoir about education',
-            'Practical self-improvement',
-            'Inspiring political memoir',
-            'Philosophical journey story',
-            'Domestic drama with dark secrets',
-            'Psychological thriller page-turner',
-            'Suspenseful domestic thriller'
+            # Realistic ratings (3.5-4.8 range)
+            4.05, 4.25, 4.30, 4.15, 4.40, 4.20, 3.85, 4.10, 3.95, 4.35, 4.25, 4.18,
+            4.41, 4.01, 3.91, 4.26, 4.08, 3.88, 4.05, 3.75, 4.32, 4.28, 4.15, 3.92,
+            4.28, 4.52, 4.01, 4.15, 3.68, 4.11, 3.99, 4.35, 4.02, 4.28, 4.31, 4.25,
+            4.20, 4.42, 4.35, 4.43, 4.31, 4.28, 4.18, 4.32,
+            4.29, 4.47, 4.44, 3.88, 4.38, 4.33, 3.89, 4.37, 4.45, 4.09,
+            4.50, 4.33, 4.18, 4.32, 4.25, 4.23, 3.92, 4.08,
+            4.34, 4.40, 4.26, 4.35, 4.18, 4.15, 4.17
         ]
     }
+    
+    # Generate genres programmatically
+    genre_categories = [
+        ['Romance'], ['Contemporary'], ['Romance'], ['Romance'],
+        ['Romance', 'LGBTQ+'], ['Romance'], ['Romance'], ['Contemporary'],
+        ['Romance'], ['Romance', 'LGBTQ+'], ['Romance'], ['Romance'],
+        
+        ['Literary Fiction'], ['Mystery'], ['Thriller'], ['Mystery'],
+        ['Thriller'], ['Mystery'], ['Contemporary'], ['Thriller'],
+        ['Mystery'], ['Thriller'], ['Mystery'], ['Thriller'],
+        
+        ['Fantasy'], ['Science Fiction'], ['Literary Fiction'], ['Literary Fiction'],
+        ['Literary Fiction'], ['Science Fiction'], ['Fantasy'], ['Fantasy'],
+        ['Fantasy'], ['Fantasy'], ['Science Fiction'], ['Science Fiction'],
+        
+        ['Young Adult'], ['Fantasy', 'Young Adult'], ['Fantasy', 'Young Adult'], ['Young Adult'],
+        ['Contemporary'], ['Romance'], ['Young Adult'], ['Young Adult', 'Romance'],
+        
+        ['Literary Fiction'], ['Memoir'], ['Biography'], ['Philosophy'], ['Contemporary'],
+        ['Literary Fiction'], ['Adventure'], ['Historical Fiction'], ['Contemporary'], ['Contemporary'],
+        
+        ['Historical Fiction'], ['Historical Fiction'], ['Literary Fiction'], ['Historical Fiction'],
+        ['Historical Fiction'], ['Literary Fiction'], ['Historical Fiction'], ['Historical Fiction'],
+        
+        ['Self-Help'], ['Non-Fiction'], ['Memoir'], ['Memoir'],
+        ['Psychology'], ['Psychology'], ['Psychology']
+    ]
+    
+    # Create summer appeal descriptions
+    summer_appeals = []
+    for i, (title, author, year, rating) in enumerate(zip(summer_books['title'], summer_books['author'], summer_books['year'], summer_books['average_rating'])):
+        genre = ', '.join(genre_categories[i]) if i < len(genre_categories) else 'Contemporary'
+        appeal = generate_summer_appeal(title, author, genre, rating)
+        summer_appeals.append(appeal)
+    
+    summer_books['genre'] = [', '.join(genres) for genres in genre_categories]
+    summer_books['summer_appeal'] = summer_appeals
+    
     return pd.DataFrame(summer_books)
 
 def load_data():
@@ -289,37 +391,91 @@ def load_data():
     try:
         possible_files = [
             'books.csv', 'book_data.csv', 'library.csv', 'goodbooks.csv',
-            'goodreads_works 2.csv', 'maven_books_dataset.csv', 'bookshelf.csv', 'maven_bookshelf.csv'
+            'goodreads_works 2.csv', 'maven_books_dataset.csv', 'bookshelf.csv', 'maven_bookshelf.csv',
+            'goodreads-books.csv', 'books_1.Best_Books_Ever.csv', 'goodreads_book_graph.csv'
         ]
         
         for filename in possible_files:
             if Path(filename).exists():
-                df = pd.read_csv(filename)
-                df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
-                
-                column_mapping = {
-                    'original_title': 'title',
-                    'avg_rating': 'average_rating', 
-                    'original_publication_year': 'year',
-                    'genres': 'genre'
-                }
-                
-                for old_name, new_name in column_mapping.items():
-                    if old_name in df.columns:
-                        df.rename(columns={old_name: new_name}, inplace=True)
-                
-                df.dropna(subset=['title'], inplace=True)
-                if 'author' in df.columns:
-                    df.dropna(subset=['author'], inplace=True)
-                
-                return df
+                try:
+                    # Try to read with different encodings
+                    encodings = ['utf-8', 'latin-1', 'iso-8859-1', 'cp1252']
+                    df = None
+                    
+                    for encoding in encodings:
+                        try:
+                            df = pd.read_csv(filename, encoding=encoding, low_memory=False)
+                            break
+                        except UnicodeDecodeError:
+                            continue
+                    
+                    if df is None:
+                        continue
+                    
+                    # Clean column names
+                    df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_').str.replace('.', '_')
+                    
+                    # Common column mappings for different datasets
+                    column_mapping = {
+                        'original_title': 'title',
+                        'avg_rating': 'average_rating',
+                        'average_rating_': 'average_rating',
+                        'original_publication_year': 'year',
+                        'publication_year': 'year',
+                        'genres': 'genre',
+                        'genre_and_votes': 'genre',
+                        'authors': 'author',
+                        'book_title': 'title',
+                        'book_author': 'author',
+                        'rating': 'average_rating',
+                        'publication_date': 'year'
+                    }
+                    
+                    # Apply column mappings
+                    for old_name, new_name in column_mapping.items():
+                        if old_name in df.columns:
+                            df.rename(columns={old_name: new_name}, inplace=True)
+                    
+                    # Ensure we have required columns
+                    required_columns = ['title', 'author']
+                    if not all(col in df.columns for col in required_columns):
+                        continue
+                    
+                    # Clean the data
+                    df.dropna(subset=['title'], inplace=True)
+                    if 'author' in df.columns:
+                        df.dropna(subset=['author'], inplace=True)
+                    
+                    # Handle year column
+                    if 'year' in df.columns:
+                        df['year'] = pd.to_numeric(df['year'], errors='coerce')
+                    
+                    # Handle rating column
+                    if 'average_rating' in df.columns:
+                        df['average_rating'] = pd.to_numeric(df['average_rating'], errors='coerce')
+                    
+                    # Generate summer appeal for external datasets
+                    if 'summer_appeal' not in df.columns:
+                        df['summer_appeal'] = df.apply(lambda row: generate_summer_appeal(
+                            row.get('title', ''),
+                            row.get('author', ''),
+                            row.get('genre', 'Contemporary'),
+                            row.get('average_rating', 3.5)
+                        ), axis=1)
+                    
+                    st.success(f"📚 Successfully loaded {len(df):,} books from {filename}")
+                    return df
+                    
+                except Exception as file_error:
+                    st.warning(f"⚠️ Could not load {filename}: {str(file_error)}")
+                    continue
         
-        st.info("📝 No CSV file found. Using curated summer reading recommendations.")
+        st.info("📝 No CSV file found. Using expanded curated summer reading recommendations.")
         return load_sample_summer_data()
         
     except Exception as e:
         st.error(f"❌ Error loading data: {str(e)}")
-        st.info("Using sample summer reading data instead.")
+        st.info("Using expanded sample summer reading data instead.")
         return load_sample_summer_data()
 
 def load_summer_list():
@@ -571,402 +727,49 @@ def discover_summer_books():
     # Summer appeal filter
     filtered_df = filtered_df[filtered_df['summer_score'] >= min_summer_score]
     
-    # Sort by summer score
-    recommended_df = filtered_df.sort_values('summer_score', ascending=False)
+    # Sort by summer score and relevance
+    recommended_df = filtered_df.sort_values(['summer_score', 'average_rating'], ascending=[False, False])
     
-    # Show default recommendations if no filters applied
+    # Show curated recommendations if no specific filters applied
     if not search_term and selected_author == 'All Authors' and selected_genre == 'All Genres' and min_rating <= 3.5 and min_summer_score <= 3.5:
         st.markdown("#### ⭐ Staff Picks - Highly Recommended Summer Reads")
-        recommended_df = df.nlargest(25, 'summer_score')
+        # Show top books by summer score, but don't limit to just 25
+        recommended_df = df.nlargest(min(100, len(df)), 'summer_score')
     
-    # Limit results
-    max_results = 50
+    # Display pagination for large datasets
+    results_per_page = 50
     total_results = len(recommended_df)
     
-    if total_results > max_results:
-        recommended_df = recommended_df.head(max_results)
-        show_limit_message = True
+    # Pagination
+    if total_results > results_per_page:
+        # Add pagination controls
+        col_pag1, col_pag2, col_pag3 = st.columns([2, 1, 2])
+        with col_pag2:
+            page_number = st.number_input(
+                f"Page (1-{(total_results-1)//results_per_page + 1})", 
+                min_value=1, 
+                max_value=(total_results-1)//results_per_page + 1, 
+                value=1
+            )
+        
+        start_idx = (page_number - 1) * results_per_page
+        end_idx = min(start_idx + results_per_page, total_results)
+        display_df = recommended_df.iloc[start_idx:end_idx]
+        
+        st.markdown(f"### 📖 Showing {start_idx + 1}-{end_idx} of {total_results:,} Books")
     else:
-        show_limit_message = False
+        display_df = recommended_df
+        st.markdown(f"### 📖 {total_results:,} Books Found")
     
     # Display results
-    displayed_count = len(recommended_df)
-    
     if total_results == 0:
         st.warning("🔍 No books match your current filters. Try adjusting your search criteria.")
         return
     
-    # Result count message
-    if show_limit_message:
-        st.markdown(f"### 📖 Showing Top {displayed_count} of {total_results} Books Found")
-        st.info(f"💡 Use filters to narrow your search for more specific recommendations.")
-    else:
-        st.markdown(f"### 📖 {displayed_count} Books Found")
+    # Show helpful tips for large datasets
+    if total_results > 200:
+        st.info("💡 **Large dataset detected!** Use the search and filter options above to find books more easily. You can search by title, author, or genre.")
     
-    # Display recommendations
-    for _, book in recommended_df.iterrows():
+    # Display books
+    for _, book in display_df.iterrows():
         display_summer_book_card(book, show_add_button=True, compact=True)
-
-def display_summer_reading_list():
-    """Display and manage the summer reading list"""
-    st.markdown("### 🏖️ My Summer Reading List")
-    
-    if not st.session_state.summer_reading_list:
-        st.markdown("""
-        <div class="summer-empty-state">
-            <h3>☀️ Your summer reading adventure awaits!</h3>
-            <p>Start building your perfect summer reading list by discovering books that match your mood and interests.</p>
-            <p>🌅 Head over to 'Discover Summer Books' to find your next great read!</p>
-        </div>
-        """, unsafe_allow_html=True)
-        return
-
-    summer_books_df = pd.DataFrame(st.session_state.summer_reading_list)
-
-    # Summer reading stats
-    total_books = len(summer_books_df)
-    avg_rating = summer_books_df['rating'].mean() if not summer_books_df.empty else 0
-    unique_authors = summer_books_df['author'].nunique() if 'author' in summer_books_df.columns else 0
-    
-    # Calculate reading goal progress
-    summer_goal = st.sidebar.number_input("📚 Summer Reading Goal", min_value=1, max_value=50, value=10)
-    progress = min(100, (total_books / summer_goal) * 100)
-    
-    # Display stats
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.markdown(f"""
-        <div class="summer-stat">
-            <div class="stat-number">{total_books}</div>
-            <div class="stat-label">Books Added</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown(f"""
-        <div class="summer-stat">
-            <div class="stat-number">{avg_rating:.1f}⭐</div>
-            <div class="stat-label">Avg Rating</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col3:
-        st.markdown(f"""
-        <div class="summer-stat">
-            <div class="stat-number">{unique_authors}</div>
-            <div class="stat-label">Authors</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col4:
-        st.markdown(f"""
-        <div class="summer-stat">
-            <div class="stat-number">{progress:.0f}%</div>
-            <div class="stat-label">Goal Progress</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    # Progress bar
-    st.progress(progress / 100)
-    st.caption(f"🎯 {total_books} of {summer_goal} books added to your summer list")
-    
-    st.markdown("---")
-
-    # Filters for the list
-    col1, col2 = st.columns(2)
-    with col1:
-        search_summer_books = st.text_input("Search your summer list", placeholder="Title or author...")
-    with col2:
-        min_rating = st.slider("Minimum Rating", 1, 5, 1)
-
-    # Apply filters to summer list
-    filtered_books = summer_books_df.copy()
-    if search_summer_books:
-        mask = (
-            filtered_books['title'].str.contains(search_summer_books, case=False, na=False) |
-            filtered_books['author'].str.contains(search_summer_books, case=False, na=False)
-        )
-        filtered_books = filtered_books[mask]
-    
-    filtered_books = filtered_books[filtered_books['rating'] >= min_rating]
-
-    # Display summer reading list
-    st.markdown("### 📚 Your Curated Summer Collection")
-    
-    if len(filtered_books) == 0:
-        st.info("🔍 No books match your filters. Try adjusting your search.")
-        return
-    
-    # Group by genre for better organization
-    genre_groups = {}
-    for idx, book in filtered_books.iterrows():
-        genre_data = book.get('genre', 'Contemporary')
-        parsed_genres = parse_genres(genre_data)
-        main_genre = parsed_genres[0] if parsed_genres else 'Contemporary'
-        
-        if main_genre not in genre_groups:
-            genre_groups[main_genre] = []
-        genre_groups[main_genre].append(book)
-    
-    # Display by genre sections
-    for genre, books in genre_groups.items():
-        genre_icon = summer_genre_icons.get(genre, "📚")
-        st.markdown(f"#### {genre_icon} {genre} ({len(books)} book{'s' if len(books) != 1 else ''})")
-        
-        for book in books:
-            display_summer_book_card(book, show_add_button=False, show_remove_button=True, compact=True)
-
-def show_summer_insights():
-    """Show summer reading insights and recommendations"""
-    st.markdown("### 📊 Summer Reading Insights")
-    
-    # Dataset analytics for summer reading
-    if not st.session_state.books_df.empty:
-        st.markdown("#### 🌞 Summer Reading Trends")
-        df = st.session_state.books_df.copy()
-        
-        # Calculate summer appeal scores for all books
-        df['summer_score'] = df.apply(get_summer_appeal_score, axis=1)
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            # Most summer-friendly genres
-            genre_summer_scores = {}
-            for _, row in df.iterrows():
-                genre_data = row['genre']
-                parsed_genres = parse_genres(genre_data)
-                summer_score = row['summer_score']
-                
-                for genre in parsed_genres:
-                    if genre not in genre_summer_scores:
-                        genre_summer_scores[genre] = []
-                    genre_summer_scores[genre].append(summer_score)
-            
-            # Calculate average summer scores by genre
-            avg_genre_scores = {
-                genre: sum(scores) / len(scores) 
-                for genre, scores in genre_summer_scores.items() 
-                if len(scores) >= 3  # Only include genres with at least 3 books
-            }
-            
-            if avg_genre_scores:
-                st.markdown("##### 🏖️ Best Summer Genres")
-                sorted_genres = sorted(avg_genre_scores.items(), key=lambda x: x[1], reverse=True)[:8]
-                genre_chart_data = pd.DataFrame(sorted_genres, columns=['Genre', 'Summer Appeal Score'])
-                st.bar_chart(genre_chart_data.set_index('Genre')['Summer Appeal Score'])
-        
-        with col2:
-            # Summer reading recommendations by rating
-            st.markdown("##### ⭐ Highly Rated Summer Books")
-            top_summer_books = df[df['summer_score'] >= 4.2].nlargest(10, 'average_rating')
-            
-            if not top_summer_books.empty:
-                for _, book in top_summer_books.head(5).iterrows():
-                    genre_data = book.get('genre', 'Contemporary')
-                    parsed_genres = parse_genres(genre_data)
-                    genre_display = parsed_genres[0] if parsed_genres else 'Contemporary'
-                    
-                    st.markdown(f"""
-                    <div class="summer-recommendation">
-                        <strong>{book['title']}</strong><br>
-                        <em>by {book['author']}</em><br>
-                        <span class="summer-genre-tag">{genre_display}</span>
-                        <span style="color: #FF7043;">⭐ {book['average_rating']:.1f}</span>
-                    </div>
-                    """, unsafe_allow_html=True)
-    
-    # Personal summer reading analytics
-    if st.session_state.summer_reading_list:
-        st.markdown("---")
-        st.markdown("#### 🏖️ Your Summer Reading Profile")
-        summer_books_df = pd.DataFrame(st.session_state.summer_reading_list)
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            # Genre distribution in summer list
-            summer_genres = {}
-            for book in st.session_state.summer_reading_list:
-                genre_data = book.get('genre', 'Contemporary')
-                parsed_genres = parse_genres(genre_data)
-                for genre in parsed_genres:
-                    summer_genres[genre] = summer_genres.get(genre, 0) + 1
-            
-            if summer_genres:
-                st.markdown("##### 📚 Your Summer Genre Mix")
-                summer_genre_df = pd.DataFrame(list(summer_genres.items()), columns=['Genre', 'Count'])
-                st.bar_chart(summer_genre_df.set_index('Genre')['Count'])
-        
-        with col2:
-            # Rating distribution
-            rating_counts = summer_books_df['rating'].value_counts().sort_index()
-            st.markdown("##### ⭐ Your Summer Ratings")
-            rating_labels = {1: '1⭐', 2: '2⭐', 3: '3⭐', 4: '4⭐', 5: '5⭐'}
-            rating_counts.index = rating_counts.index.map(rating_labels)
-            st.bar_chart(rating_counts)
-        
-        # Summer reading timeline
-        summer_books_df['date_added'] = pd.to_datetime(summer_books_df['date_added'])
-        books_per_day = summer_books_df.groupby(summer_books_df['date_added'].dt.date).size()
-        
-        if len(books_per_day) > 1:
-            st.markdown("##### 📈 List Building Progress")
-            st.line_chart(books_per_day)
-        
-        # Summer reading recommendations based on preferences
-        st.markdown("##### 🌅 Personalized Summer Recommendations")
-        
-        # Analyze user's genre preferences
-        user_favorite_genres = list(summer_genres.keys())[:3] if summer_genres else ['Romance', 'Contemporary']
-        
-        # Find books that match user preferences but aren't in their list
-        if not st.session_state.books_df.empty:
-            df = st.session_state.books_df.copy()
-            df['summer_score'] = df.apply(get_summer_appeal_score, axis=1)
-            
-            # Get existing book IDs in summer list
-            existing_ids = {book.get('work_id', f"{book['title']}_{book['author']}") for book in st.session_state.summer_reading_list}
-            
-            # Filter recommendations
-            recommendations = []
-            for _, book in df.iterrows():
-                book_id = book.get('work_id', f"{book['title']}_{book['author']}")
-                if book_id not in existing_ids:
-                    genre_data = book.get('genre', 'Contemporary')
-                    parsed_genres = parse_genres(genre_data)
-                    
-                    # Check if book matches user's preferred genres
-                    genre_match = any(user_genre in genre for user_genre in user_favorite_genres for genre in parsed_genres)
-                    
-                    if genre_match and book['summer_score'] >= 4.0:
-                        recommendations.append(book)
-            
-            # Sort by summer score and display top 3
-            recommendations.sort(key=lambda x: x['summer_score'], reverse=True)
-            
-            if recommendations:
-                st.markdown("Based on your current list, you might enjoy:")
-                for book in recommendations[:3]:
-                    display_summer_book_card(book, show_add_button=True, compact=True)
-            else:
-                st.info("🎉 Great selection! You've already found some excellent summer reads.")
-        
-        # Summer reading tips
-        st.markdown("##### 💡 Summer Reading Tips")
-        tips = [
-            "🏖️ Pack lighter paperbacks for beach reading",
-            "📱 Download audiobooks for road trips and walks", 
-            "🌙 Keep a shorter book for bedtime reading",
-            "☀️ Mix genres to match different summer moods",
-            "👥 Join online book clubs for summer discussions"
-        ]
-        
-        for tip in tips:
-            st.markdown(f"- {tip}")
-    
-    else:
-        st.markdown("""
-        <div class="summer-empty-state">
-            <h3>📊 Start tracking your summer reading!</h3>
-            <p>Add books to your summer reading list to see personalized insights and recommendations.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-def main():
-    """Main application"""
-    # Load summer reading list on startup
-    if not st.session_state.summer_reading_list:
-        st.session_state.summer_reading_list = load_summer_list()
-    
-    # Auto-load dataset
-    if not st.session_state.loaded_data:
-        with st.spinner("Loading summer reading recommendations..."):
-            st.session_state.books_df = load_data()
-            st.session_state.loaded_data = True
-    
-    # Sidebar with summer-themed styling
-    st.sidebar.markdown("""
-    <div class="sidebar-header">
-        <div class="sidebar-brand">☀️ Summer Reading List Builder</div>
-        <div class="sidebar-subtitle">Curate Your Perfect Summer Books</div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Navigation section
-    st.sidebar.markdown("""
-    <div class="navigation-section">
-        <div class="nav-title">Navigation</div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Navigation
-    page = st.sidebar.radio("", [
-        "Discover Summer Books", 
-        "My Summer Reading List", 
-        "Summer Reading Insights"
-    ])
-    
-    # Show recent additions to summer list
-    if st.session_state.summer_reading_list and len(st.session_state.summer_reading_list) > 0:
-        st.sidebar.markdown("""
-        <div class="navigation-section">
-            <div class="nav-title">Recently Added</div>
-        </div>
-        """, unsafe_allow_html=True)
-        recent_books = sorted(st.session_state.summer_reading_list, key=lambda x: x['date_added'], reverse=True)[:3]
-        for book in recent_books:
-            st.sidebar.markdown(f"""
-            <div class="recent-summer-book">
-                ☀️ {book['title'][:25]}{'...' if len(book['title']) > 25 else ''}
-            </div>
-            """, unsafe_allow_html=True)
-    else:
-        st.sidebar.markdown("""
-        <div class="navigation-section">
-            <div class="nav-title">Summer Reading Goals</div>
-            <p style='color: #5D4037; font-size: 0.75rem; margin: 0.4rem 0; line-height: 1.3;'>
-                🌞 Build your perfect summer reading list! Discover books that match your mood and create your ideal seasonal collection.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    # Summer reading tip of the day
-    summer_tips = [
-        "🏖️ Beach reads should be engaging but not too complex!",
-        "📚 Mix different genres to match your summer moods",
-        "⏰ Set a realistic summer reading goal",
-        "🎧 Audiobooks are perfect for summer walks",
-        "👥 Join a summer book club for motivation!"
-    ]
-    
-    daily_tip = random.choice(summer_tips)
-    st.sidebar.markdown(f"""
-    <div class="navigation-section">
-        <div class="nav-title">💡 Summer Reading Tip</div>
-        <p style='color: #5D4037; font-size: 0.75rem; margin: 0.4rem 0; line-height: 1.3; font-style: italic;'>
-            {daily_tip}
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Main content
-    if page == "Discover Summer Books":
-        discover_summer_books()
-    elif page == "My Summer Reading List":
-        display_summer_reading_list()
-    elif page == "Summer Reading Insights":
-        show_summer_insights()
-    
-    # Footer
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("""
-    <div style='text-align: center; color: #5D4037; font-size: 0.7rem; background: linear-gradient(135deg, rgba(255, 248, 220, 0.9) 0%, rgba(255, 235, 205, 0.9) 100%); backdrop-filter: blur(10px); padding: 8px; border-radius: 6px; border: 1px solid rgba(255, 165, 0, 0.3); box-shadow: 0 2px 8px rgba(255, 140, 0, 0.15);'>
-        <p style='margin: 0;'>☀️ Summer Reading List Builder</p>
-        <p style='margin: 0; opacity: 0.8;'>Make this summer unforgettable with great books!</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-if __name__ == "__main__":
-    main()
