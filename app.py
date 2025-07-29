@@ -595,7 +595,7 @@ def discover_summer_books():
 
         
         # Page selector
-        page_number = st.selectbox(f"📄 Page (1 to {total_pages})", 
+    page_number = st.selectbox(f"📄 Page (1 to {total_pages})", 
                                   options=list(range(1, total_pages + 1)), 
                                   index=0)
         
