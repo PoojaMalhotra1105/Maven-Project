@@ -5,203 +5,491 @@ import os
 import random
 from datetime import datetime
 from pathlib import Path
+import base64
 
 # Set page config
 st.set_page_config(
-    page_title="☀️ Summer Reading List Builder",
-    page_icon="☀️",
+    page_title="✨ Amazing Book Discovery",
+    page_icon="✨",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for summer reading theme
+# Enhanced CSS for an amazing looking app
 st.markdown("""
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
     .stApp {
-        background: linear-gradient(135deg, #FFB347 0%, #FFD700 50%, #FFA500 100%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes shimmer {
+        0% { background-position: -200px 0; }
+        100% { background-position: calc(200px + 100%) 0; }
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
     }
     
     .stSidebar {
         background: rgba(255, 255, 255, 0.95) !important;
-        backdrop-filter: blur(10px);
-        border-right: 1px solid rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(20px);
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
     }
     
     .sidebar-header {
-        background: linear-gradient(135deg, #FF7043 0%, #FFB347 100%);
-        backdrop-filter: blur(10px);
-        padding: 0.8rem;
-        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        backdrop-filter: blur(20px);
+        padding: 1.2rem;
+        border-radius: 15px;
         text-align: center;
-        margin-bottom: 0.5rem;
-        box-shadow: 0 4px 15px rgba(255, 112, 67, 0.3);
+        margin-bottom: 1rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .sidebar-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        animation: shimmer 2s infinite;
     }
     
     .sidebar-brand {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
         font-weight: 700;
         color: #ffffff;
-        margin-bottom: 0.3rem;
+        margin-bottom: 0.5rem;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        position: relative;
+        z-index: 1;
     }
     
     .sidebar-subtitle {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         color: #ffffff;
         font-weight: 400;
         opacity: 0.95;
         text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        position: relative;
+        z-index: 1;
     }
     
     .navigation-section {
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(5px);
-        padding: 0.6rem;
-        border-radius: 10px;
-        margin-bottom: 0.4rem;
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 1rem;
+        border-radius: 15px;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        animation: fadeInUp 0.6s ease-out;
     }
     
     .nav-title {
-        color: #FF7043;
-        font-size: 0.8rem;
+        color: #667eea;
+        font-size: 0.9rem;
         font-weight: 600;
-        margin-bottom: 0rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .summer-book-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-radius: 12px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 4px 15px rgba(255, 112, 67, 0.2);
-        border-left: 4px solid #FFB347;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    
-    .summer-book-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(255, 112, 67, 0.3);
-    }
-    
-    .compact-summer-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        padding: 0.8rem;
-        border-radius: 10px;
-        margin-bottom: 0.8rem;
-        box-shadow: 0 3px 12px rgba(255, 112, 67, 0.2);
-        border: 1px solid rgba(255, 180, 71, 0.3);
-        border-left: 4px solid #FF7043;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    
-    .compact-summer-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(255, 112, 67, 0.3);
-    }
-    
-    .ultra-compact-summer-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        padding: 0.5rem;
-        border-radius: 8px;
         margin-bottom: 0.5rem;
-        box-shadow: 0 2px 8px rgba(255, 112, 67, 0.15);
-        border: 1px solid rgba(255, 180, 71, 0.2);
-        border-left: 3px solid #FFB347;
-        transition: transform 0.1s ease, box-shadow 0.1s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
     
-    .ultra-compact-summer-card:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(255, 112, 67, 0.25);
+    .amazing-book-card {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease-out;
     }
     
-    .summer-empty-state {
-        text-align: center;
-        padding: 2.5rem 2rem;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 248, 220, 0.95) 100%);
+    .amazing-book-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+        background-size: 300% 100%;
+        animation: gradientShift 3s ease infinite;
+    }
+    
+    .amazing-book-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(102, 126, 234, 0.3);
+    }
+    
+    .compact-amazing-card {
+        background: rgba(255, 255, 255, 0.96);
         backdrop-filter: blur(15px);
-        border-radius: 15px;
-        margin: 1.5rem 0;
-        box-shadow: 0 6px 20px rgba(255, 140, 0, 0.2);
-        border: 2px solid rgba(255, 165, 0, 0.3);
-        border-top: 4px solid #FFB347;
-    }
-    
-    .summer-empty-state h3 {
-        color: #FF7043;
-        font-weight: 600;
+        padding: 1.2rem;
+        border-radius: 16px;
         margin-bottom: 1rem;
-        font-size: 1.4rem;
+        box-shadow: 0 6px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.4s ease-out;
     }
     
-    .summer-empty-state p {
-        color: #5D4037;
-        font-size: 1rem;
-        line-height: 1.5;
+    .compact-amazing-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #667eea, #f5576c);
+        background-size: 200% 100%;
+        animation: gradientShift 4s ease infinite;
     }
     
-    .summer-stat {
-        background: linear-gradient(135deg, rgba(255, 248, 220, 0.9) 0%, rgba(255, 235, 205, 0.9) 100%);
-        backdrop-filter: blur(10px);
-        padding: 0.8rem;
-        border-radius: 10px;
+    .compact-amazing-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
+    
+    .ultra-compact-amazing-card {
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(12px);
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 0.8rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .ultra-compact-amazing-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #764ba2, #f093fb);
+        background-size: 150% 100%;
+        animation: gradientShift 5s ease infinite;
+    }
+    
+    .ultra-compact-amazing-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .amazing-empty-state {
         text-align: center;
-        border: 1px solid rgba(255, 165, 0, 0.3);
-        box-shadow: 0 3px 10px rgba(255, 140, 0, 0.2);
+        padding: 3rem 2rem;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        margin: 2rem 0;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    .amazing-empty-state::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe);
+        background-size: 400% 100%;
+        animation: gradientShift 6s ease infinite;
+    }
+    
+    .amazing-empty-state h3 {
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        font-size: 1.6rem;
+    }
+    
+    .amazing-empty-state p {
+        color: #64748b;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+    
+    .amazing-stat {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(15px);
+        padding: 1.2rem;
+        border-radius: 16px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        animation: fadeInUp 0.5s ease-out;
+    }
+    
+    .amazing-stat:hover {
+        transform: translateY(-4px);
+        animation: pulse 2s infinite;
     }
     
     .stat-number {
-        color: #FF7043;
-        font-size: 1.3rem;
+        color: #667eea;
+        font-size: 1.8rem;
         font-weight: 700;
+        margin-bottom: 0.3rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
     
     .stat-label {
-        color: #8D6E63;
-        font-size: 0.75rem;
+        color: #64748b;
+        font-size: 0.8rem;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 1px;
         font-weight: 500;
     }
     
-    .recent-summer-book {
-        color: #5D4037;
-        font-size: 0.75rem;
-        margin-bottom: 0.4rem;
-        padding: 0.4rem;
-        background: linear-gradient(135deg, rgba(255, 248, 220, 0.8) 0%, rgba(255, 235, 205, 0.8) 100%);
+    .recent-amazing-book {
+        color: #64748b;
+        font-size: 0.8rem;
+        margin-bottom: 0.6rem;
+        padding: 0.6rem;
+        background: rgba(255, 255, 255, 0.9);
         backdrop-filter: blur(10px);
-        border-radius: 6px;
-        border-left: 3px solid #FFB347;
-        box-shadow: 0 2px 8px rgba(255, 140, 0, 0.15);
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
     }
     
-    .summer-recommendation {
-        background: linear-gradient(135deg, rgba(255, 239, 213, 0.9) 0%, rgba(255, 224, 178, 0.9) 100%);
-        border: 2px solid rgba(255, 152, 0, 0.3);
-        border-radius: 12px;
-        padding: 1rem;
-        margin: 0.5rem 0;
-        box-shadow: 0 4px 15px rgba(255, 152, 0, 0.2);
+    .recent-amazing-book:hover {
+        transform: translateX(4px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
     }
     
-    .summer-genre-tag {
-        background: linear-gradient(135deg, #FFB347 0%, #FFA500 100%);
+    .amazing-recommendation {
+        background: rgba(255, 255, 255, 0.96);
+        border: 2px solid rgba(102, 126, 234, 0.2);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        box-shadow: 0 8px 30px rgba(102, 126, 234, 0.1);
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.5s ease-out;
+    }
+    
+    .amazing-recommendation:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
+    }
+    
+    .amazing-genre-tag {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 0.2rem 0.6rem;
-        border-radius: 20px;
-        font-size: 0.7rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 25px;
+        font-size: 0.75rem;
         font-weight: 500;
-        margin: 0.1rem;
+        margin: 0.2rem;
         display: inline-block;
-        box-shadow: 0 2px 5px rgba(255, 165, 0, 0.3);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        transition: transform 0.2s ease;
+    }
+    
+    .amazing-genre-tag:hover {
+        transform: translateY(-2px);
+    }
+    
+    .amazing-book-cover {
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        overflow: hidden;
+    }
+    
+    .amazing-book-cover:hover {
+        transform: scale(1.05) rotate(2deg);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+    }
+    
+    .amazing-placeholder {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        text-align: center;
+        padding: 8px;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .amazing-placeholder::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        animation: shimmer 3s infinite;
+    }
+    
+    .amazing-placeholder:hover {
+        transform: scale(1.02);
+        box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+    }
+    
+    .book-title {
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.3rem;
+        line-height: 1.3;
+    }
+    
+    .book-author {
+        color: #64748b;
+        font-weight: 500;
+        margin-bottom: 0.3rem;
+    }
+    
+    .book-details {
+        color: #64748b;
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .search-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(15px);
+        border-radius: 15px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .stButton > button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 25px;
+        padding: 0.4rem 1rem;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    
+    .stProgress .stProgress-bar {
+        background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+        background-size: 200% 100%;
+        animation: gradientShift 2s ease infinite;
+    }
+    
+    /* Enhanced input styles */
+    .stTextInput > div > div > input {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid rgba(102, 126, 234, 0.2);
+        border-radius: 12px;
+        padding: 0.8rem;
+        transition: all 0.3s ease;
+    }
+    
+    .stTextInput > div > div > input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+    }
+    
+    .stSelectbox > div > div > div {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid rgba(102, 126, 234, 0.2);
+        border-radius: 12px;
+    }
+    
+    .stSlider > div > div > div {
+        background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+    
+    /* Page header styling */
+    .page-header {
+        text-align: center;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    .page-subtitle {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 400;
+        animation: fadeInUp 1s ease-out;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -411,7 +699,10 @@ def display_summer_book_card(book, show_add_button=True, compact=False, show_rem
     else:
         genre_display = "📚 Contemporary"
     
-    card_class = "ultra-compact-summer-card" if compact else "summer-book-card"
+    if compact:
+        card_class = "ultra-compact-amazing-card"
+    else:
+        card_class = "amazing-book-card"
     
     with st.container():
         st.markdown(f'<div class="{card_class}">', unsafe_allow_html=True)
@@ -442,8 +733,14 @@ def display_summer_book_card(book, show_add_button=True, compact=False, show_rem
             image_displayed = False
             if image_url:
                 try:
-                    # Add headers to avoid blocking
-                    st.image(image_url, width=80, caption="")
+                    # Enhanced image display with better styling
+                    st.markdown(f"""
+                    <div class="amazing-book-cover" style="width: 80px; height: 120px; margin-bottom: 8px;">
+                        <img src="{image_url}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" 
+                             onerror="this.style.display='none'" 
+                             alt="Book cover for {title}">
+                    </div>
+                    """, unsafe_allow_html=True)
                     image_displayed = True
                 except Exception as e:
                     # If image fails, we'll show placeholder below
@@ -453,21 +750,27 @@ def display_summer_book_card(book, show_add_button=True, compact=False, show_rem
             if not image_displayed:
                 # Create a beautiful placeholder with book info
                 clean_title = title[:15] + "..." if len(title) > 15 else title
+                clean_author = author[:12] + "..." if len(author) > 12 else author
+                
+                # Get genre for color theming
+                genre_data = book.get('genre', 'Contemporary')
+                parsed_genres = parse_genres(genre_data)
+                main_genre = parsed_genres[0] if parsed_genres else 'Contemporary'
+                
+                # Enhanced placeholder with genre-based styling
                 st.markdown(f"""
-                <div style="width: 80px; height: 120px; background: linear-gradient(135deg, #FFB347 0%, #FFA500 100%); 
-                            border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; 
-                            color: white; font-size: 0.6rem; text-align: center; font-weight: bold; padding: 4px;
-                            box-shadow: 0 4px 8px rgba(255, 165, 0, 0.3); margin-bottom: 8px;">
-                    <div style="font-size: 1.2rem; margin-bottom: 4px;">📚</div>
-                    <div style="line-height: 1.1; overflow: hidden; word-wrap: break-word;">{clean_title}</div>
-                    <div style="font-size: 0.5rem; margin-top: 2px; opacity: 0.8;">by {author[:10]}{'...' if len(author) > 10 else ''}</div>
+                <div class="amazing-placeholder" style="width: 80px; height: 120px; position: relative;">
+                    <div style="font-size: 1.5rem; margin-bottom: 6px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">📚</div>
+                    <div style="line-height: 1.1; overflow: hidden; word-wrap: break-word; font-size: 0.6rem; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">{clean_title}</div>
+                    <div style="font-size: 0.45rem; margin-top: 4px; opacity: 0.9; font-weight: 500;">by {clean_author}</div>
+                    <div style="position: absolute; top: 4px; right: 4px; font-size: 0.5rem; opacity: 0.7;">{summer_genre_icons.get(main_genre, "📖")}</div>
                 </div>
                 """, unsafe_allow_html=True)
         
         with col_info:
             display_title = title if len(title) <= 60 else title[:57] + "..."
-            st.markdown(f'<div class="book-title" style="font-size: 1rem; margin-bottom: 0.2rem; color: #FF7043;">{display_title}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="book-author" style="font-size: 0.8rem; margin-bottom: 0.2rem; color: #8D6E63;">by {author}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="book-title" style="font-size: 1rem; margin-bottom: 0.2rem; color: #1e293b;">{display_title}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="book-author" style="font-size: 0.8rem; margin-bottom: 0.2rem; color: #64748b;">by {author}</div>', unsafe_allow_html=True)
             
             rating = book.get('average_rating', 0)
             year = book.get('year', 'Unknown')
@@ -489,7 +792,7 @@ def display_summer_book_card(book, show_add_button=True, compact=False, show_rem
             else:
                 year_display = "Unknown"
             
-            st.markdown(f'<div class="book-details" style="font-size: 0.75rem; margin-bottom: 0.3rem; color: #5D4037;">{rating_display} • {year_display} • {genre_display}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="book-details" style="font-size: 0.75rem; margin-bottom: 0.3rem; color: #64748b;">{rating_display} • {year_display} • {genre_display}</div>', unsafe_allow_html=True)
             
             if summer_appeal and not compact:
                 st.markdown(f'<div style="font-size: 0.7rem; color: #FF8C00; font-style: italic; margin-top: 0.3rem;">☀️ {summer_appeal}</div>', unsafe_allow_html=True)
@@ -540,6 +843,14 @@ def display_summer_book_card(book, show_add_button=True, compact=False, show_rem
 def discover_summer_books():
     """Discover summer reading recommendations"""
     
+    # Amazing page header
+    st.markdown("""
+    <div class="page-header">
+        <div class="page-title">✨ Discover Amazing Books</div>
+        <div class="page-subtitle">Find your next incredible reading adventure</div>
+    </div>
+    """, unsafe_allow_html=True)
+    
     if st.session_state.books_df.empty:
         st.warning("📚 No book collection available. Please ensure your dataset file is in the project directory.")
         return
@@ -581,30 +892,35 @@ def discover_summer_books():
                                        index=0,
                                        key="page_selector")
     
-    # Main search bar
-    search_term = st.text_input("🔍 Search books, authors, or genres", placeholder="Try 'beach read', 'thriller', or author name...")
+    # Search and filter section with amazing styling
+    st.markdown('<div class="search-container">', unsafe_allow_html=True)
     
-    # Filters in columns (removed genre filter)
+    # Main search bar
+    search_term = st.text_input("🔍 Search books, authors, or genres", placeholder="Try 'romance', 'mystery', or your favorite author...", key="search_input")
+    
+    # Filters in columns
     col1, col2, col3 = st.columns(3)
     
     with col1:
         # Author filter
         if 'author' in df.columns:
             authors_list = ['All Authors'] + sorted(df['author'].dropna().unique().tolist())
-            selected_author = st.selectbox("👤 Author", authors_list)
+            selected_author = st.selectbox("👤 Author", authors_list, key="author_filter")
         else:
             selected_author = 'All Authors'
     
     with col2:
         # Rating filter
         if 'average_rating' in df.columns:
-            min_rating = st.slider("⭐ Min Rating", 1.0, 5.0, 3.5, step=0.1)
+            min_rating = st.slider("⭐ Min Rating", 1.0, 5.0, 3.5, step=0.1, key="rating_filter")
         else:
             min_rating = 1.0
     
     with col3:
         # Summer appeal filter
-        min_summer_score = st.slider("☀️ Summer Appeal", 1.0, 5.0, 3.5, step=0.1)
+        min_summer_score = st.slider("✨ Reading Appeal", 1.0, 5.0, 3.5, step=0.1, key="summer_score_filter")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
     
     # Apply filters
     filtered_df = df.copy()
@@ -666,11 +982,18 @@ def discover_summer_books():
 
 def display_summer_reading_list():
     """Display and manage the summer reading list"""
-    st.markdown("### 🏖️ My Summer Reading List")
+    
+    # Amazing page header
+    st.markdown("""
+    <div class="page-header">
+        <div class="page-title">🏖️ My Reading Collection</div>
+        <div class="page-subtitle">Your curated library of amazing books</div>
+    </div>
+    """, unsafe_allow_html=True)
     
     if not st.session_state.summer_reading_list:
         st.markdown("""
-        <div class="summer-empty-state">
+        <div class="amazing-empty-state">
             <h3>☀️ Your summer reading adventure awaits!</h3>
             <p>Start building your perfect summer reading list by discovering books that match your mood and interests.</p>
             <p>🌅 Head over to 'Discover Summer Books' to find your next great read!</p>
@@ -686,7 +1009,7 @@ def display_summer_reading_list():
     unique_authors = summer_books_df['author'].nunique() if 'author' in summer_books_df.columns else 0
     
     # Calculate reading goal progress
-    summer_goal = st.sidebar.number_input("📚 Summer Reading Goal", min_value=1, max_value=50, value=10)
+    summer_goal = st.sidebar.number_input("📚 Summer Reading Goal", min_value=1, max_value=50, value=10, key="summer_goal_input")
     progress = min(100, (total_books / summer_goal) * 100)
     
     # Display stats
@@ -694,7 +1017,7 @@ def display_summer_reading_list():
     
     with col1:
         st.markdown(f"""
-        <div class="summer-stat">
+        <div class="amazing-stat">
             <div class="stat-number">{total_books}</div>
             <div class="stat-label">Books Added</div>
         </div>
@@ -702,7 +1025,7 @@ def display_summer_reading_list():
     
     with col2:
         st.markdown(f"""
-        <div class="summer-stat">
+        <div class="amazing-stat">
             <div class="stat-number">{avg_rating:.1f}⭐</div>
             <div class="stat-label">Avg Rating</div>
         </div>
@@ -710,7 +1033,7 @@ def display_summer_reading_list():
     
     with col3:
         st.markdown(f"""
-        <div class="summer-stat">
+        <div class="amazing-stat">
             <div class="stat-number">{unique_authors}</div>
             <div class="stat-label">Authors</div>
         </div>
@@ -718,7 +1041,7 @@ def display_summer_reading_list():
     
     with col4:
         st.markdown(f"""
-        <div class="summer-stat">
+        <div class="amazing-stat">
             <div class="stat-number">{progress:.0f}%</div>
             <div class="stat-label">Goal Progress</div>
         </div>
@@ -733,9 +1056,9 @@ def display_summer_reading_list():
     # Filters for the list
     col1, col2 = st.columns(2)
     with col1:
-        search_summer_books = st.text_input("Search your summer list", placeholder="Title or author...")
+        search_summer_books = st.text_input("Search your summer list", placeholder="Title or author...", key="search_list_input")
     with col2:
-        min_rating = st.slider("Minimum Rating", 1, 5, 1)
+        min_rating = st.slider("Minimum Rating", 1, 5, 1, key="min_rating_filter")
 
     # Apply filters to summer list
     filtered_books = summer_books_df.copy()
@@ -776,7 +1099,14 @@ def display_summer_reading_list():
 
 def show_summer_insights():
     """Show summer reading insights and recommendations"""
-    st.markdown("### 📊 Summer Reading Insights")
+    
+    # Amazing page header
+    st.markdown("""
+    <div class="page-header">
+        <div class="page-title">📊 Reading Analytics</div>
+        <div class="page-subtitle">Discover insights about your reading journey</div>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Dataset analytics for summer reading
     if not st.session_state.books_df.empty:
@@ -826,11 +1156,11 @@ def show_summer_insights():
                     genre_display = parsed_genres[0] if parsed_genres else 'Contemporary'
                     
                     st.markdown(f"""
-                    <div class="summer-recommendation">
+                    <div class="amazing-recommendation">
                         <strong>{book['title']}</strong><br>
                         <em>by {book['author']}</em><br>
-                        <span class="summer-genre-tag">{genre_display}</span>
-                        <span style="color: #FF7043;">⭐ {book['average_rating']:.1f}</span>
+                        <span class="amazing-genre-tag">{genre_display}</span>
+                        <span style="color: #667eea;">⭐ {book['average_rating']:.1f}</span>
                     </div>
                     """, unsafe_allow_html=True)
     
@@ -913,7 +1243,7 @@ def show_summer_insights():
         # Summer reading tips
         st.markdown("##### 💡 Summer Reading Tips")
         tips = [
-            "🏖️ Pack lighter paperbacks for beach reading",
+            "🏖️ Beach reads should be engaging but not too complex!",
             "📱 Download audiobooks for road trips and walks", 
             "🌙 Keep a shorter book for bedtime reading",
             "☀️ Mix genres to match different summer moods",
@@ -925,7 +1255,7 @@ def show_summer_insights():
     
     else:
         st.markdown("""
-        <div class="summer-empty-state">
+        <div class="amazing-empty-state">
             <h3>📊 Start tracking your summer reading!</h3>
             <p>Add books to your summer reading list to see personalized insights and recommendations.</p>
         </div>
@@ -937,17 +1267,17 @@ def main():
     if not st.session_state.summer_reading_list:
         st.session_state.summer_reading_list = load_summer_list()
     
-    # Auto-load dataset
+    # Auto-load dataset with amazing loading message
     if not st.session_state.loaded_data:
-        with st.spinner("Loading summer reading recommendations..."):
+        with st.spinner("✨ Loading your amazing book collection..."):
             st.session_state.books_df = load_data()
             st.session_state.loaded_data = True
     
-    # Sidebar with summer-themed styling
+    # Sidebar with amazing styling
     st.sidebar.markdown("""
     <div class="sidebar-header">
-        <div class="sidebar-brand">☀️ Summer Reading List Builder</div>
-        <div class="sidebar-subtitle">Curate Your Perfect Summer Books</div>
+        <div class="sidebar-brand">✨ Amazing Book Discovery</div>
+        <div class="sidebar-subtitle">Curate Your Perfect Reading Collection</div>
     </div>
     """, unsafe_allow_html=True)
     
@@ -960,10 +1290,10 @@ def main():
     
     # Navigation
     page = st.sidebar.radio("", [
-        "Discover Summer Books", 
-        "My Summer Reading List", 
-        "Summer Reading Insights"
-    ])
+        "Discover Amazing Books", 
+        "My Reading Collection", 
+        "Reading Analytics"
+    ], key="main_nav")
     
     # Show recent additions to summer list
     if st.session_state.summer_reading_list and len(st.session_state.summer_reading_list) > 0:
@@ -975,53 +1305,55 @@ def main():
         recent_books = sorted(st.session_state.summer_reading_list, key=lambda x: x['date_added'], reverse=True)[:3]
         for book in recent_books:
             st.sidebar.markdown(f"""
-            <div class="recent-summer-book">
-                ☀️ {book['title'][:25]}{'...' if len(book['title']) > 25 else ''}
+            <div class="recent-amazing-book">
+                ✨ {book['title'][:25]}{'...' if len(book['title']) > 25 else ''}
             </div>
             """, unsafe_allow_html=True)
     else:
         st.sidebar.markdown("""
         <div class="navigation-section">
-            <div class="nav-title">Summer Reading Goals</div>
-            <p style='color: #5D4037; font-size: 0.75rem; margin: 0.4rem 0; line-height: 1.3;'>
-                🌞 Build your perfect summer reading list! Discover books that match your mood and create your ideal seasonal collection.
+            <div class="nav-title">Reading Goals</div>
+            <p style='color: #64748b; font-size: 0.75rem; margin: 0.4rem 0; line-height: 1.3;'>
+                ✨ Build your perfect reading collection! Discover amazing books that match your mood and interests.
             </p>
         </div>
         """, unsafe_allow_html=True)
     
-    # Summer reading tip of the day
-    summer_tips = [
-        "🏖️ Beach reads should be engaging but not too complex!",
-        "📚 Mix different genres to match your summer moods",
-        "⏰ Set a realistic summer reading goal",
-        "🎧 Audiobooks are perfect for summer walks",
-        "👥 Join a summer book club for motivation!"
+    # Reading tip of the day
+    amazing_tips = [
+        "✨ Choose books that spark your curiosity and imagination!",
+        "📚 Mix different genres to keep your reading fresh and exciting",
+        "⏰ Set achievable reading goals and celebrate your progress",
+        "🎧 Audiobooks are perfect for multitasking and commuting",
+        "👥 Join online book communities for amazing discussions!",
+        "🌟 Keep a reading journal to track your literary journey",
+        "📖 Don't be afraid to DNF (Did Not Finish) books that don't click"
     ]
     
-    daily_tip = random.choice(summer_tips)
+    daily_tip = random.choice(amazing_tips)
     st.sidebar.markdown(f"""
     <div class="navigation-section">
-        <div class="nav-title">💡 Summer Reading Tip</div>
-        <p style='color: #5D4037; font-size: 0.75rem; margin: 0.4rem 0; line-height: 1.3; font-style: italic;'>
+        <div class="nav-title">💡 Reading Tip</div>
+        <p style='color: #64748b; font-size: 0.75rem; margin: 0.4rem 0; line-height: 1.3; font-style: italic;'>
             {daily_tip}
         </p>
     </div>
     """, unsafe_allow_html=True)
     
     # Main content
-    if page == "Discover Summer Books":
+    if page == "Discover Amazing Books":
         discover_summer_books()
-    elif page == "My Summer Reading List":
+    elif page == "My Reading Collection":
         display_summer_reading_list()
-    elif page == "Summer Reading Insights":
+    elif page == "Reading Analytics":
         show_summer_insights()
     
     # Footer
     st.sidebar.markdown("---")
     st.sidebar.markdown("""
-    <div style='text-align: center; color: #5D4037; font-size: 0.7rem; background: linear-gradient(135deg, rgba(255, 248, 220, 0.9) 0%, rgba(255, 235, 205, 0.9) 100%); backdrop-filter: blur(10px); padding: 8px; border-radius: 6px; border: 1px solid rgba(255, 165, 0, 0.3); box-shadow: 0 2px 8px rgba(255, 140, 0, 0.15);'>
-        <p style='margin: 0;'>☀️ Summer Reading List Builder</p>
-        <p style='margin: 0; opacity: 0.8;'>Make this summer unforgettable with great books!</p>
+    <div style='text-align: center; color: #64748b; font-size: 0.7rem; background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%); backdrop-filter: blur(10px); padding: 12px; border-radius: 12px; border: 1px solid rgba(102, 126, 234, 0.2); box-shadow: 0 4px 20px rgba(102, 126, 234, 0.1);'>
+        <p style='margin: 0; font-weight: 600;'>✨ Amazing Book Discovery</p>
+        <p style='margin: 4px 0 0 0; opacity: 0.8;'>Discover your next incredible read!</p>
     </div>
     """, unsafe_allow_html=True)
 
