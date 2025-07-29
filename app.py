@@ -871,11 +871,31 @@ def discover_summer_books():
     recommended_df = filtered_df.sort_values('summer_score', ascending=False)
     total_results = len(recommended_df)
     
-    # Set default filter values without showing the UI
-    search_term = ""
-    selected_author = 'All Authors'
-    min_rating = 1.0
-    min_summer_score = 1.0
+    # Search and filter section without white container
+    # Main search bar
+    search_term = st.text_input("🔍 Search books, authors, or genres", placeholder="Try 'romance', 'mystery', or your favorite author...", key="search_input")
+    
+    # Filters in columns
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        # Author filter
+        if 'author' in df.columns:
+            authors_list = ['All Authors'] + sorted(df['author'].dropna().unique().tolist())
+            selected_author = st.selectbox("👤 Author", authors_list, key="author_filter")
+        else:
+            selected_author = 'All Authors'
+    
+    with col2:
+        # Rating filter
+        if 'average_rating' in df.columns:
+            min_rating = st.slider("⭐ Min Rating", 1.0, 5.0, 3.5, step=0.1, key="rating_filter")
+        else:
+            min_rating = 1.0
+    
+    with col3:
+        # Appeal filter
+        min_summer_score = st.slider("✨ Reading Appeal", 1.0, 5.0, 3.5, step=0.1, key="summer_score_filter")
     
     # Apply filters
     filtered_df = df.copy()
