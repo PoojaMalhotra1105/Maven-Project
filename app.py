@@ -588,15 +588,11 @@ def discover_summer_books():
         st.warning("🔍 No books match your current filters. Try adjusting your search criteria.")
         return
     
-    # Result count message
-    st.markdown(f"### 📖 {total_results} Books Found")
     
     # Optional: Add pagination for very large datasets
     books_per_page = st.sidebar.number_input("📖 Books per page", min_value=10, max_value=200, value=50)
     
-    if total_results > books_per_page:
-        # Calculate total pages
-        total_pages = (total_results - 1) // books_per_page + 1
+
         
         # Page selector
         page_number = st.selectbox(f"📄 Page (1 to {total_pages})", 
