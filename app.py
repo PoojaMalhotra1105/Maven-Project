@@ -588,24 +588,16 @@ def discover_summer_books():
         st.warning("🔍 No books match your current filters. Try adjusting your search criteria.")
         return
     
-    # Show a reasonable number of results without overwhelming pagination
-    max_display = 100  # Show up to 100 books at once
-    
-    if total_results > max_display:
-        st.markdown(f"### 📖 Showing Top {max_display} Summer Books")
-        if total_results > 500:
-            st.info("💡 Use the filters above to narrow your search for more specific recommendations.")
-        else:
-            st.info(f"💡 Showing top {max_display} of {total_results} books. Use filters to find specific titles.")
-        page_books = recommended_df.head(max_display)
+    # Simple header without overwhelming numbers
+    if total_results == 1:
+        st.markdown(f"### 📖 Found Your Book!")
+    elif total_results <= 20:
+        st.markdown(f"### 📖 {total_results} Great Summer Reads")
     else:
-        if total_results == 1:
-            st.markdown(f"### 📖 Found Your Book!")
-        elif total_results <= 10:
-            st.markdown(f"### 📖 {total_results} Perfect Matches")
-        else:
-            st.markdown(f"### 📖 {total_results} Great Summer Reads")
-        page_books = recommended_df
+        st.markdown(f"### 📖 Summer Reading Recommendations")
+    
+    # Show all books without pagination
+    page_books = recommended_df
     
     # Display recommendations
     for _, book in page_books.iterrows():
