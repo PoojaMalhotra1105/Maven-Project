@@ -577,34 +577,46 @@ def discover_summer_books():
     # Show default recommendations if no filters applied
     if not search_term and selected_author == 'All Authors' and selected_genre == 'All Genres' and min_rating <= 3.5 and min_summer_score <= 3.5:
         st.markdown("#### ⭐ Staff Picks - Highly Recommended Summer Reads")
-        recommended_df = df.nlargest(25, 'summer_score')
+        # Show all books sorted by summer score instead of limiting to 25
+        recommended_df = df.sort_values('summer_score', ascending=False)
     
-    # Limit results
-    max_results = 50
+    # Display count without limiting results
     total_results = len(recommended_df)
     
-    if total_results > max_results:
-        recommended_df = recommended_df.head(max_results)
-        show_limit_message = True
-    else:
-        show_limit_message = False
-    
     # Display results
-    displayed_count = len(recommended_df)
-    
     if total_results == 0:
         st.warning("🔍 No books match your current filters. Try adjusting your search criteria.")
         return
     
     # Result count message
-    if show_limit_message:
-        st.markdown(f"### 📖 Showing Top {displayed_count} of {total_results} Books Found")
-        st.info(f"💡 Use filters to narrow your search for more specific recommendations.")
+    st.markdown(f"### 📖 {total_results} Books Found")
+    
+    # Optional: Add pagination for very large datasets
+    books_per_page = st.sidebar.number_input("📖 Books per page", min_value=10, max_value=200, value=50)
+    
+    if total_results > books_per_page:
+        # Calculate total pages
+        total_pages = (total_results - 1) // books_per_page + 1
+        
+        # Page selector
+        page_number = st.selectbox(f"📄 Page (1 to {total_pages})", 
+                                  options=list(range(1, total_pages + 1)), 
+                                  index=0)
+        
+        # Calculate start and end indices
+        start_idx = (page_number - 1) * books_per_page
+        end_idx = min(start_idx + books_per_page, total_results)
+        
+        # Show current page info
+        st.info(f"Showing books {start_idx + 1} to {end_idx} of {total_results}")
+        
+        # Get books for current page
+        page_books = recommended_df.iloc[start_idx:end_idx]
     else:
-        st.markdown(f"### 📖 {displayed_count} Books Found")
+        page_books = recommended_df
     
     # Display recommendations
-    for _, book in recommended_df.iterrows():
+    for _, book in page_books.iterrows():
         display_summer_book_card(book, show_add_button=True, compact=True)
 
 def display_summer_reading_list():
