@@ -429,30 +429,38 @@ def display_summer_book_card(book, show_add_button=True, compact=False, show_rem
             title = str(book.get('title', 'Unknown Title'))
             author = str(book.get('author', 'Unknown Author'))
             
-            # Check for existing image URL in data
-            image_url = book.get('image_url') or book.get('cover_image') or book.get('thumbnail')
+            # Check for existing image URL in data (try multiple possible column names)
+            image_url = None
+            possible_image_columns = ['image_url', 'cover_image', 'thumbnail', 'small_image_url', 'image', 'cover_url', 'book_image']
             
-            if image_url and str(image_url) != 'nan' and str(image_url).strip():
+            for col in possible_image_columns:
+                if col in book and book.get(col) and str(book.get(col)) not in ['nan', 'None', '', 'null']:
+                    image_url = str(book.get(col)).strip()
+                    break
+            
+            # Try to display the image
+            image_displayed = False
+            if image_url:
                 try:
+                    # Add headers to avoid blocking
                     st.image(image_url, width=80, caption="")
-                except:
-                    # Fallback to placeholder if image fails to load
-                    st.markdown(f"""
-                    <div style="width: 80px; height: 120px; background: linear-gradient(135deg, #FFB347 0%, #FFA500 100%); 
-                                border-radius: 8px; display: flex; align-items: center; justify-content: center; 
-                                color: white; font-size: 0.7rem; text-align: center; font-weight: bold;">
-                        📚<br>Book<br>Cover
-                    </div>
-                    """, unsafe_allow_html=True)
-            else:
+                    image_displayed = True
+                except Exception as e:
+                    # If image fails, we'll show placeholder below
+                    image_displayed = False
+            
+            # Show placeholder if no image or image failed
+            if not image_displayed:
                 # Create a beautiful placeholder with book info
+                clean_title = title[:15] + "..." if len(title) > 15 else title
                 st.markdown(f"""
                 <div style="width: 80px; height: 120px; background: linear-gradient(135deg, #FFB347 0%, #FFA500 100%); 
                             border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; 
                             color: white; font-size: 0.6rem; text-align: center; font-weight: bold; padding: 4px;
-                            box-shadow: 0 4px 8px rgba(255, 165, 0, 0.3);">
+                            box-shadow: 0 4px 8px rgba(255, 165, 0, 0.3); margin-bottom: 8px;">
                     <div style="font-size: 1.2rem; margin-bottom: 4px;">📚</div>
-                    <div style="line-height: 1.1; overflow: hidden;">{title[:20]}{'...' if len(title) > 20 else ''}</div>
+                    <div style="line-height: 1.1; overflow: hidden; word-wrap: break-word;">{clean_title}</div>
+                    <div style="font-size: 0.5rem; margin-top: 2px; opacity: 0.8;">by {author[:10]}{'...' if len(author) > 10 else ''}</div>
                 </div>
                 """, unsafe_allow_html=True)
         
