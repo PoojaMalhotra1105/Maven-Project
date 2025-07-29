@@ -938,7 +938,6 @@ def discover_summer_books():
         return
     
     st.caption(f"📚 Showing {total_results} amazing books")
-    
     # Display recommendations
     for _, book in recommended_df.head(50).iterrows():
         display_summer_book_card(book, show_add_button=True, compact=True)
